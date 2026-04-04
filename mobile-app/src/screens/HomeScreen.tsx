@@ -20,12 +20,11 @@ function getThisWeekStats(sessions: any[]) {
 }
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
-  const { profile, sessions, loadProfile, loadSessions, loadAllExercises } = useAppStore();
+  const { profile, sessions, loadProfile, loadSessions } = useAppStore();
 
   useEffect(() => {
     loadProfile();
     loadSessions();
-    loadAllExercises();
   }, []);
 
   const handleStartWorkout = () => {

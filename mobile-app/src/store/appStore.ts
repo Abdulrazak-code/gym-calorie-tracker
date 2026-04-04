@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserProfile, LoggedExercise, WorkoutSession, Exercise } from '../types';
 import { caloriesBurned } from '../engine/calorieEngine';
-import { EXERCISE_LIBRARY, getAllExercises } from '../engine/exercises';
+import { EXERCISE_LIBRARY } from '../engine/exercises';
 
 const PROFILE_KEY = 'user_profile';
 const SESSIONS_KEY = 'workout_sessions';
@@ -12,7 +12,6 @@ interface AppState {
   sessions: WorkoutSession[];
   activeSession: LoggedExercise[];
   isSessionActive: boolean;
-  // FIX: store the full merged exercise list (local + WGER) so findExercise works for all
   allExercises: Exercise[];
 
   setProfile: (profile: UserProfile) => Promise<void>;
@@ -28,11 +27,7 @@ interface AppState {
   loadSessions: () => Promise<void>;
   deleteSession: (id: string) => Promise<void>;
 
-  // FIX: load and cache all exercises (local + WGER) into store
-  loadAllExercises: () => Promise<void>;
-
   getLiveCalories: () => { activeCal: number; epocCal: number; totalCal: number; durationSec: number };
-  // FIX: findExercise now searches allExercises (local + WGER), not just local 20
   findExercise: (key: string) => Exercise | undefined;
 }
 
@@ -41,7 +36,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   sessions: [],
   activeSession: [],
   isSessionActive: false,
-  allExercises: EXERCISE_LIBRARY, // start with local library, WGER added after loadAllExercises()
+  allExercises: EXERCISE_LIBRARY,
 
   setProfile: async (profile) => {
     set({ profile });
@@ -52,17 +47,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     const data = await AsyncStorage.getItem(PROFILE_KEY);
     if (data) {
       set({ profile: JSON.parse(data) });
-    }
-  },
-
-  // FIX: fetches WGER exercises and merges with local library into allExercises
-  loadAllExercises: async () => {
-    try {
-      const merged = await getAllExercises();
-      set({ allExercises: merged });
-    } catch {
-      // fallback: keep local library if WGER fetch fails
-      set({ allExercises: EXERCISE_LIBRARY });
     }
   },
 
