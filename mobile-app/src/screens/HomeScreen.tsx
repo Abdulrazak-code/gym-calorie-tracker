@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList } from 'react-native';
 import { useAppStore } from '../store/appStore';
+import { colors, spacing, radii, typography } from '../theme';
+import { Card, Button, StatCard } from '../components/ui';
 
 function getThisWeekStats(sessions: any[]) {
   const now = new Date();
@@ -39,100 +41,99 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   const weekStats = getThisWeekStats(sessions);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.title}>Gym Calorie Tracker</Text>
+        <View>
+          <Text style={styles.greeting}>Welcome back</Text>
+          <Text style={styles.title}>Gym Calorie Tracker</Text>
+        </View>
         {profile && (
-          <View style={styles.profileBadge}>
+          <TouchableOpacity style={styles.profileBadge} onPress={() => navigation.navigate('Profile')}>
             <Text style={styles.profileText}>{profile.bodyWeightKg} kg</Text>
-          </View>
+          </TouchableOpacity>
         )}
       </View>
 
-      <TouchableOpacity style={styles.startBtn} onPress={handleStartWorkout}>
-        <Text style={styles.startBtnText}>Start Workout</Text>
-      </TouchableOpacity>
+      <Button variant="primary" size="lg" fullWidth onPress={handleStartWorkout} style={styles.startBtn}>
+        Start Workout
+      </Button>
 
       {sessions.length > 0 && (
-        <View style={styles.weekCard}>
-          <Text style={styles.weekLabel}>This Week</Text>
-          <View style={styles.weekStats}>
-            <View style={styles.weekStat}>
-              <Text style={styles.weekStatValue}>{weekStats.totalCal}</Text>
-              <Text style={styles.weekStatLabel}>kcal</Text>
-            </View>
-            <View style={styles.weekDivider} />
-            <View style={styles.weekStat}>
-              <Text style={styles.weekStatValue}>{weekStats.totalWorkouts}</Text>
-              <Text style={styles.weekStatLabel}>workouts</Text>
-            </View>
-            <View style={styles.weekDivider} />
-            <View style={styles.weekStat}>
-              <Text style={styles.weekStatValue}>{weekStats.totalMinutes}</Text>
-              <Text style={styles.weekStatLabel}>minutes</Text>
-            </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>This Week</Text>
+          <View style={styles.statsRow}>
+            <StatCard label="Calories" value={`${weekStats.totalCal}`} icon="🔥" />
+            <StatCard label="Workouts" value={`${weekStats.totalWorkouts}`} icon="💪" />
+            <StatCard label="Minutes" value={`${weekStats.totalMinutes}`} icon="⏱️" />
           </View>
         </View>
       )}
 
-      <Text style={styles.sectionTitle}>Recent Workouts</Text>
-      {sessions.length === 0 ? (
-        <Text style={styles.emptyText}>No workouts yet. Start your first one!</Text>
-      ) : (
-        <FlatList
-          data={sessions.slice(0, 3)}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={false}
-          renderItem={({ item }) => (
-            <TouchableOpacity
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Recent Workouts</Text>
+          {sessions.length > 3 && (
+            <TouchableOpacity onPress={() => navigation.navigate('History')}>
+              <Text style={styles.seeAll}>See all</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        {sessions.length === 0 ? (
+          <Card variant="glass" style={styles.emptyCard}>
+            <Text style={styles.emptyEmoji}>🏋️</Text>
+            <Text style={styles.emptyText}>No workouts yet</Text>
+            <Text style={styles.emptySubtext}>Start your first workout to begin tracking</Text>
+          </Card>
+        ) : (
+          sessions.slice(0, 3).map((item: any) => (
+            <Card
+              key={item.id}
+              variant="elevated"
               style={styles.sessionCard}
               onPress={() => navigation.navigate('Summary', { session: item })}
             >
-              <Text style={styles.sessionDate}>
-                {new Date(item.date).toLocaleDateString()}
-              </Text>
-              <Text style={styles.sessionCalories}>
-                {item.totalCalories.toFixed(1)} kcal
-              </Text>
-              <Text style={styles.sessionExercises}>
-                {item.exercises.length} exercise{item.exercises.length !== 1 ? 's' : ''}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
-      )}
-
-      <TouchableOpacity
-        style={styles.profileBtn}
-        onPress={() => navigation.navigate('Profile')}
-      >
-        <Text style={styles.profileBtnText}>Edit Profile</Text>
-      </TouchableOpacity>
+              <View style={styles.sessionRow}>
+                <View>
+                  <Text style={styles.sessionDate}>
+                    {new Date(item.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                  </Text>
+                  <Text style={styles.sessionCalories}>{item.totalCalories.toFixed(1)} kcal</Text>
+                  <Text style={styles.sessionMeta}>
+                    {item.exercises.length} exercises • {Math.floor(item.durationSec / 60)}m {item.durationSec % 60}s
+                  </Text>
+                </View>
+                <Text style={styles.sessionArrow}>→</Text>
+              </View>
+            </Card>
+          ))
+        )}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 24 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', flex: 1 },
-  profileBadge: { backgroundColor: '#1e1e1e', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 20 },
-  profileText: { color: '#4CAF50', fontSize: 14, fontWeight: 'bold' },
-  startBtn: { backgroundColor: '#4CAF50', borderRadius: 16, padding: 20, alignItems: 'center', marginBottom: 32 },
-  startBtnText: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
-  weekCard: { backgroundColor: '#1e1e1e', borderRadius: 12, padding: 16, marginBottom: 24 },
-  weekLabel: { color: '#888', fontSize: 14, marginBottom: 12, textAlign: 'center' },
-  weekStats: { flexDirection: 'row', justifyContent: 'space-around' },
-  weekStat: { alignItems: 'center' },
-  weekStatValue: { color: '#4CAF50', fontSize: 28, fontWeight: 'bold' },
-  weekStatLabel: { color: '#888', fontSize: 12, marginTop: 2 },
-  weekDivider: { width: 1, backgroundColor: '#333' },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff', marginBottom: 16 },
-  emptyText: { color: '#666', fontSize: 16, textAlign: 'center', marginTop: 40 },
-  sessionCard: { backgroundColor: '#1e1e1e', borderRadius: 12, padding: 16, marginBottom: 12 },
-  sessionDate: { color: '#aaa', fontSize: 14, marginBottom: 4 },
-  sessionCalories: { color: '#4CAF50', fontSize: 24, fontWeight: 'bold' },
-  sessionExercises: { color: '#888', fontSize: 14, marginTop: 4 },
-  profileBtn: { marginTop: 24, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#333', borderRadius: 12 },
-  profileBtnText: { color: '#aaa', fontSize: 16 },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing['2xl'] },
+  greeting: { ...typography.body, color: colors.textMuted, marginBottom: spacing.xs },
+  title: { ...typography.h2, color: colors.text },
+  profileBadge: { backgroundColor: colors.surface, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radii.full, borderWidth: 1, borderColor: colors.border },
+  profileText: { color: colors.primary, ...typography.label },
+  startBtn: { marginBottom: spacing['2xl'] },
+  section: { marginBottom: spacing['2xl'] },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
+  sectionTitle: { ...typography.h3, color: colors.text, marginBottom: spacing.lg },
+  statsRow: { flexDirection: 'row', gap: spacing.md },
+  seeAll: { ...typography.label, color: colors.primary },
+  emptyCard: { alignItems: 'center', padding: spacing['3xl'] },
+  emptyEmoji: { fontSize: 48, marginBottom: spacing.lg },
+  emptyText: { ...typography.h4, color: colors.text, marginBottom: spacing.sm },
+  emptySubtext: { ...typography.bodySm, color: colors.textMuted },
+  sessionCard: { marginBottom: spacing.md },
+  sessionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  sessionDate: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs },
+  sessionCalories: { ...typography.h2, color: colors.primary, marginBottom: spacing.xs },
+  sessionMeta: { ...typography.bodySm, color: colors.textSecondary },
+  sessionArrow: { fontSize: 20, color: colors.textMuted },
 });

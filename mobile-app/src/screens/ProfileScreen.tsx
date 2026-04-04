@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useAppStore } from '../store/appStore';
+import { colors, spacing, radii, typography } from '../theme';
+import { Button, Input } from '../components/ui';
 
 export default function ProfileScreen({ navigation }: { navigation: any }) {
   const { profile, setProfile, loadProfile } = useAppStore();
 
   const [weight, setWeight] = React.useState(profile ? profile.bodyWeightKg.toString() : '');
   const [age, setAge] = React.useState(profile ? profile.age.toString() : '');
-  const [gender, setGender] = React.useState<'male' | 'female' | 'other'>(
-    profile?.gender || 'male',
-  );
+  const [gender, setGender] = React.useState<'male' | 'female' | 'other'>(profile?.gender || 'male');
   const [height, setHeight] = React.useState(profile ? profile.heightCm.toString() : '');
 
   useEffect(() => {
@@ -30,7 +30,6 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
     const ageNum = parseInt(age, 10);
     const heightNum = parseFloat(height);
 
-    // FIX: added > 0 checks — previously !weightNum passed for negatives like -70
     if (!weightNum || weightNum <= 0) {
       Alert.alert('Invalid Weight', 'Please enter a valid body weight greater than 0 kg');
       return;
@@ -44,106 +43,56 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
       return;
     }
 
-    await setProfile({
-      bodyWeightKg: weightNum,
-      age: ageNum,
-      gender,
-      heightCm: heightNum,
-    });
-
+    await setProfile({ bodyWeightKg: weightNum, age: ageNum, gender, heightCm: heightNum });
     Alert.alert('Success', 'Profile saved!');
     navigation.navigate('Home');
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Profile Setup</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Text style={styles.title}>Profile</Text>
+      <Text style={styles.subtitle}>Update your body metrics for accurate calorie calculations</Text>
 
-      <Text style={styles.label}>Body Weight (kg)</Text>
-      <TextInput
-        style={styles.input}
-        value={weight}
-        onChangeText={setWeight}
-        keyboardType="decimal-pad"
-        placeholder="e.g. 70"
-        placeholderTextColor="#555"
-      />
+      <View style={styles.form}>
+        <Input label="Body Weight (kg)" value={weight} onChangeText={setWeight} keyboardType="decimal-pad" placeholder="e.g. 70" />
+        <Input label="Age" value={age} onChangeText={setAge} keyboardType="number-pad" placeholder="e.g. 25" />
+        <Input label="Height (cm)" value={height} onChangeText={setHeight} keyboardType="decimal-pad" placeholder="e.g. 175" />
 
-      <Text style={styles.label}>Age</Text>
-      <TextInput
-        style={styles.input}
-        value={age}
-        onChangeText={setAge}
-        keyboardType="number-pad"
-        placeholder="e.g. 25"
-        placeholderTextColor="#555"
-      />
+        <Text style={styles.label}>Gender</Text>
+        <View style={styles.genderRow}>
+          {(['male', 'female', 'other'] as const).map((g) => (
+            <TouchableOpacity
+              key={g}
+              style={[styles.genderBtn, gender === g && styles.genderBtnActive]}
+              onPress={() => setGender(g)}
+            >
+              <Text style={[styles.genderText, gender === g && styles.genderTextActive]}>
+                {g.charAt(0).toUpperCase() + g.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      <Text style={styles.label}>Gender</Text>
-      <View style={styles.genderRow}>
-        {(['male', 'female', 'other'] as const).map((g) => (
-          <TouchableOpacity
-            key={g}
-            style={[styles.genderBtn, gender === g && styles.genderBtnActive]}
-            onPress={() => setGender(g)}
-          >
-            <Text style={[styles.genderText, gender === g && styles.genderTextActive]}>
-              {g.charAt(0).toUpperCase() + g.slice(1)}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        <View style={styles.spacer} />
+        <Button variant="primary" size="lg" fullWidth onPress={handleSave}>
+          Save Profile
+        </Button>
       </View>
-
-      <Text style={styles.label}>Height (cm)</Text>
-      <TextInput
-        style={styles.input}
-        value={height}
-        onChangeText={setHeight}
-        keyboardType="decimal-pad"
-        placeholder="e.g. 175"
-        placeholderTextColor="#555"
-      />
-
-      <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-        <Text style={styles.saveBtnText}>Save Profile</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 24 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 32 },
-  label: { fontSize: 14, color: '#aaa', marginBottom: 6, marginTop: 16 },
-  input: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 18,
-    color: '#fff',
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  genderRow: { flexDirection: 'row', gap: 12, marginTop: 8 },
-  genderBtn: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#333',
-    alignItems: 'center',
-    backgroundColor: '#1e1e1e',
-  },
-  genderBtnActive: { borderColor: '#4CAF50', backgroundColor: '#1b3a1e' },
-  genderText: { color: '#aaa', fontSize: 16 },
-  genderTextActive: { color: '#4CAF50', fontWeight: 'bold' },
-  saveBtn: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 12,
-    padding: 18,
-    alignItems: 'center',
-    marginTop: 32,
-    marginBottom: 48,
-  },
-  saveBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
+  title: { ...typography.h1, color: colors.text, marginBottom: spacing.sm },
+  subtitle: { ...typography.body, color: colors.textSecondary, marginBottom: spacing['2xl'] },
+  form: { flex: 1 },
+  label: { ...typography.label, color: colors.textSecondary, marginBottom: spacing.sm, marginTop: spacing.md },
+  genderRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.sm },
+  genderBtn: { flex: 1, padding: spacing.lg, borderRadius: radii.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, alignItems: 'center' },
+  genderBtnActive: { borderColor: colors.primary, backgroundColor: colors.primaryMuted },
+  genderText: { color: colors.textSecondary, fontSize: 15 },
+  genderTextActive: { color: colors.primary, fontWeight: '600' },
+  spacer: { height: spacing['2xl'] },
 });

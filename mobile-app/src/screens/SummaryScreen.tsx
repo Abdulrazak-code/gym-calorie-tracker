@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Share } from 'react-native';
 import { WorkoutSession } from '../types';
-import { EXERCISE_LIBRARY } from '../engine/exercises';
 import { useAppStore } from '../store/appStore';
+import { colors, spacing, radii, typography } from '../theme';
+import { Card, Button, Badge, StatCard } from '../components/ui';
 
 export default function SummaryScreen({ route, navigation }: { route: any; navigation: any }) {
   const session: WorkoutSession = route.params.session;
@@ -22,159 +23,89 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
       return `  • ${ex?.name || logged.exerciseKey}: ${totalSets} sets x ${Math.round(totalReps / totalSets)} avg reps`;
     }).join('\n');
 
-    const text = `🏋️ Workout Summary
-📅 ${new Date(session.date).toLocaleDateString()}
+    const text = `🏋️ Workout Summary\n📅 ${new Date(session.date).toLocaleDateString()}\n\n🔥 Total Calories: ${session.totalCalories.toFixed(1)} kcal\n  Active: ${session.activeCalories.toFixed(1)} | EPOC: ${session.epocCalories.toFixed(1)}\n⏱️ Duration: ${Math.floor(session.durationSec / 60)}m ${session.durationSec % 60}s\n\nExercises:\n${exerciseLines}\n\nMuscle Groups: ${Array.from(muscleGroups).join(', ')}\n\n— Gym Calorie Tracker`;
 
-🔥 Total Calories: ${session.totalCalories.toFixed(1)} kcal
-  Active: ${session.activeCalories.toFixed(1)} | EPOC: ${session.epocCalories.toFixed(1)}
-⏱️ Duration: ${Math.floor(session.durationSec / 60)}m ${session.durationSec % 60}s
-
-Exercises:
-${exerciseLines}
-
-Muscle Groups: ${Array.from(muscleGroups).join(', ')}
-
-— Gym Calorie Tracker`;
-
-    try {
-      await Share.share({ message: text });
-    } catch {
-      // User cancelled
-    }
+    try { await Share.share({ message: text }); } catch { /* cancelled */ }
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Workout Summary</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Text style={styles.title}>Workout Complete 🎉</Text>
+      <Text style={styles.date}>
+        {new Date(session.date).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+      </Text>
 
-      <View style={styles.statsCard}>
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>Total Calories</Text>
-          <Text style={styles.statValue}>{session.totalCalories.toFixed(1)}</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>Active</Text>
-          <Text style={styles.statValue}>{session.activeCalories.toFixed(1)}</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>EPOC Afterburn</Text>
-          <Text style={styles.statValue}>{session.epocCalories.toFixed(1)}</Text>
-        </View>
+      <View style={styles.statsGrid}>
+        <StatCard label="Total" value={`${session.totalCalories.toFixed(0)}`} icon="🔥" />
+        <StatCard label="Active" value={`${session.activeCalories.toFixed(0)}`} icon="⚡" />
+        <StatCard label="EPOC" value={`${session.epocCalories.toFixed(0)}`} icon="🌡️" />
       </View>
 
-      <View style={styles.durationCard}>
+      <Card variant="elevated" style={styles.durationCard}>
         <Text style={styles.durationLabel}>Session Duration</Text>
-        <Text style={styles.durationValue}>
-          {Math.floor(session.durationSec / 60)}m {session.durationSec % 60}s
-        </Text>
-      </View>
+        <Text style={styles.durationValue}>{Math.floor(session.durationSec / 60)}m {session.durationSec % 60}s</Text>
+      </Card>
 
       <Text style={styles.sectionTitle}>Exercises</Text>
       {session.exercises.map((logged, index) => {
         const exercise = findExercise(logged.exerciseKey);
         if (!exercise) return null;
-
         const totalReps = logged.sets.reduce((sum, s) => sum + s.reps, 0);
         const totalSets = logged.sets.length;
 
         return (
-          <View key={index} style={styles.exerciseCard}>
-            <Text style={styles.exerciseName}>{exercise.name}</Text>
-            <Text style={styles.exerciseDetail}>
-              {totalSets} sets x {Math.round(totalReps / totalSets)} avg reps
-            </Text>
-            <Text style={styles.exerciseDetail}>
-              Muscle: {exercise.muscle}
-            </Text>
-          </View>
+          <Card key={index} variant="glass" style={styles.exerciseCard}>
+            <View style={styles.exerciseHeader}>
+              <Text style={styles.exerciseName}>{exercise.name}</Text>
+              <Badge variant="primary">{exercise.met} MET</Badge>
+            </View>
+            <View style={styles.exerciseDetails}>
+              <Text style={styles.exerciseDetail}>{totalSets} sets</Text>
+              <Text style={styles.exerciseDetailDot}>•</Text>
+              <Text style={styles.exerciseDetail}>{Math.round(totalReps / totalSets)} avg reps</Text>
+              <Text style={styles.exerciseDetailDot}>•</Text>
+              <Text style={styles.exerciseDetail}>{exercise.muscle}</Text>
+            </View>
+          </Card>
         );
       })}
 
-      <Text style={styles.sectionTitle}>Muscle Groups Worked</Text>
+      <Text style={styles.sectionTitle}>Muscle Groups</Text>
       <View style={styles.muscleTags}>
         {Array.from(muscleGroups).map((muscle) => (
-          <View key={muscle} style={styles.muscleTag}>
-            <Text style={styles.muscleTagText}>{muscle}</Text>
-          </View>
+          <Badge key={muscle} variant="primary" style={styles.muscleTag}>{muscle}</Badge>
         ))}
       </View>
 
       <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.actionBtn}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Text style={styles.actionBtnText}>Back to Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.shareBtn}
-          onPress={handleShare}
-        >
-          <Text style={styles.shareBtnText}>Share Workout</Text>
-        </TouchableOpacity>
+        <Button variant="primary" size="lg" fullWidth onPress={() => navigation.navigate('Home')}>
+          Back to Home
+        </Button>
+        <Button variant="secondary" size="lg" fullWidth onPress={handleShare}>
+          Share Workout
+        </Button>
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 24 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 24 },
-  statsCard: {
-    flexDirection: 'row',
-    backgroundColor: '#1a2e1a',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    justifyContent: 'space-around',
-  },
-  statItem: { alignItems: 'center' },
-  statLabel: { color: '#888', fontSize: 12, marginBottom: 4 },
-  statValue: { color: '#4CAF50', fontSize: 24, fontWeight: 'bold' },
-  statDivider: { width: 1, backgroundColor: '#2a4a2a' },
-  durationCard: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-    alignItems: 'center',
-  },
-  durationLabel: { color: '#888', fontSize: 14, marginBottom: 4 },
-  durationValue: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff', marginBottom: 12 },
-  exerciseCard: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 8,
-  },
-  exerciseName: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
-  exerciseDetail: { color: '#888', fontSize: 13 },
-  muscleTags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
-  muscleTag: {
-    backgroundColor: '#1b3a1e',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  muscleTagText: { color: '#4CAF50', fontSize: 14, fontWeight: '600' },
-  actions: { marginTop: 16, gap: 12 },
-  actionBtn: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 12,
-    padding: 18,
-    alignItems: 'center',
-  },
-  actionBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  shareBtn: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    padding: 18,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  shareBtnText: { color: '#4CAF50', fontSize: 18, fontWeight: 'bold' },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
+  title: { ...typography.h1, color: colors.text, marginBottom: spacing.xs },
+  date: { ...typography.body, color: colors.textMuted, marginBottom: spacing['2xl'] },
+  statsGrid: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg },
+  durationCard: { alignItems: 'center', marginBottom: spacing['2xl'], padding: spacing.xl },
+  durationLabel: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs },
+  durationValue: { ...typography.h2, color: colors.text },
+  sectionTitle: { ...typography.h3, color: colors.text, marginBottom: spacing.lg },
+  exerciseCard: { marginBottom: spacing.md },
+  exerciseHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm },
+  exerciseName: { ...typography.h4, color: colors.text },
+  exerciseDetails: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  exerciseDetail: { ...typography.caption, color: colors.textSecondary },
+  exerciseDetailDot: { ...typography.caption, color: colors.textMuted },
+  muscleTags: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing['2xl'] },
+  muscleTag: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
+  actions: { gap: spacing.md },
 });

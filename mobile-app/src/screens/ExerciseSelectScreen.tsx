@@ -1,47 +1,46 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, FlatList } from 'react-native';
-import { WORKOUT_CATEGORIES, getExercisesForWorkout, searchExercises, EXERCISE_LIBRARY } from '../engine/exercises';
+import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { WORKOUT_CATEGORIES, getExercisesForWorkout, searchExercises } from '../engine/exercises';
 import { useAppStore } from '../store/appStore';
-import { WorkoutCategory, Exercise } from '../types';
+import { colors, spacing, radii, typography } from '../theme';
+import { Card, Badge } from '../components/ui';
 
 export default function ExerciseSelectScreen({ navigation }: { navigation: any }) {
   const [search, setSearch] = useState('');
-  const [selectedWorkout, setSelectedWorkout] = useState<WorkoutCategory | null>(null);
+  const [selectedWorkout, setSelectedWorkout] = useState<string | null>(null);
 
-  const filteredExercises = search.length > 0
-    ? searchExercises(search)
-    : [];
-
-  const workoutExercises = selectedWorkout
-    ? getExercisesForWorkout(selectedWorkout.key)
-    : [];
+  const filteredExercises = search.length > 0 ? searchExercises(search) : [];
+  const workoutExercises = selectedWorkout ? getExercisesForWorkout(selectedWorkout) : [];
+  const selectedCategory = WORKOUT_CATEGORIES.find((c) => c.key === selectedWorkout);
 
   const handleSelect = (exerciseKey: string) => {
     useAppStore.getState().addExercise(exerciseKey);
     navigation.navigate('WorkoutLogger');
   };
 
-  if (selectedWorkout) {
+  if (selectedWorkout && selectedCategory) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => setSelectedWorkout(null)} style={styles.backBtn}>
             <Text style={styles.backBtnText}>← Back</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>{selectedWorkout.icon} {selectedWorkout.name}</Text>
+          <Text style={styles.headerTitle}>
+            {selectedCategory.icon} {selectedCategory.name}
+          </Text>
         </View>
 
         <FlatList
           data={workoutExercises}
           keyExtractor={(item) => item.key}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.exerciseItem} onPress={() => handleSelect(item.key)}>
-              <View>
+            <Card style={styles.exerciseCard} onPress={() => handleSelect(item.key)} variant="glass">
+              <View style={styles.exerciseLeft}>
                 <Text style={styles.exerciseName}>{item.name}</Text>
                 <Text style={styles.exerciseMeta}>{item.equipment}</Text>
               </View>
-              <Text style={styles.metBadge}>{item.met} MET</Text>
-            </TouchableOpacity>
+              <Badge variant="primary">{item.met} MET</Badge>
+            </Card>
           )}
         />
       </View>
@@ -49,43 +48,51 @@ export default function ExerciseSelectScreen({ navigation }: { navigation: any }
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Choose Workout</Text>
 
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search exercises..."
-        placeholderTextColor="#666"
-        value={search}
-        onChangeText={setSearch}
-      />
+      <View style={styles.searchContainer}>
+        <Text style={styles.searchIcon}>🔍</Text>
+        <Text
+          style={styles.searchInput}
+          onPress={() => {}}
+        >
+          {search || 'Search exercises...'}
+        </Text>
+        <TouchableOpacity onPress={() => setSearch('')} style={styles.searchClear}>
+          <Text style={styles.searchClearText}>✕</Text>
+        </TouchableOpacity>
+      </View>
 
       {search.length > 0 ? (
         filteredExercises.map((ex) => (
-          <TouchableOpacity key={ex.key} style={styles.exerciseItem} onPress={() => handleSelect(ex.key)}>
+          <Card key={ex.key} style={styles.exerciseCard} onPress={() => handleSelect(ex.key)} variant="glass">
             <View>
               <Text style={styles.exerciseName}>{ex.name}</Text>
               <Text style={styles.exerciseMeta}>{ex.muscle} • {ex.equipment}</Text>
             </View>
-            <Text style={styles.metBadge}>{ex.met} MET</Text>
-          </TouchableOpacity>
+            <Badge variant="primary">{ex.met} MET</Badge>
+          </Card>
         ))
       ) : (
         WORKOUT_CATEGORIES.map((cat) => (
-          <TouchableOpacity
+          <Card
             key={cat.key}
             style={styles.workoutCard}
-            onPress={() => setSelectedWorkout(cat)}
+            onPress={() => setSelectedWorkout(cat.key)}
+            variant="elevated"
           >
-            <View style={styles.workoutCardLeft}>
-              <Text style={styles.workoutIcon}>{cat.icon}</Text>
+            <View style={styles.workoutLeft}>
+              <View style={styles.workoutIconContainer}>
+                <Text style={styles.workoutIcon}>{cat.icon}</Text>
+              </View>
               <View>
                 <Text style={styles.workoutName}>{cat.name}</Text>
                 <Text style={styles.workoutCount}>{cat.exerciseKeys.length} exercises</Text>
               </View>
             </View>
             <Text style={styles.chevron}>→</Text>
-          </TouchableOpacity>
+          </Card>
         ))
       )}
     </ScrollView>
@@ -93,44 +100,55 @@ export default function ExerciseSelectScreen({ navigation }: { navigation: any }
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 24 },
-  header: { marginBottom: 20 },
-  backBtn: { marginBottom: 8 },
-  backBtnText: { color: '#4CAF50', fontSize: 16 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 20 },
-  searchInput: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    color: '#fff',
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
+  header: { padding: spacing['2xl'], paddingBottom: spacing.lg },
+  backBtn: { marginBottom: spacing.md },
+  backBtnText: { color: colors.primary, ...typography.label },
+  headerTitle: { ...typography.h2, color: colors.text },
+  title: { ...typography.h1, color: colors.text, marginBottom: spacing['2xl'] },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing['2xl'],
     borderWidth: 1,
-    borderColor: '#333',
-    marginBottom: 16,
+    borderColor: colors.border,
   },
+  searchIcon: { fontSize: 18, marginRight: spacing.sm },
+  searchInput: { flex: 1, ...typography.body, color: colors.text, paddingVertical: spacing.lg },
+  searchClear: { padding: spacing.sm },
+  searchClearText: { color: colors.textMuted, fontSize: 16 },
   workoutCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    padding: 18,
-    marginBottom: 12,
+    marginBottom: spacing.md,
+    padding: spacing.lg,
   },
-  workoutCardLeft: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  workoutIcon: { fontSize: 28 },
-  workoutName: { fontSize: 18, fontWeight: 'bold', color: '#fff' },
-  workoutCount: { fontSize: 13, color: '#888', marginTop: 2 },
-  chevron: { fontSize: 20, color: '#666' },
-  exerciseItem: {
+  workoutLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
+  workoutIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: radii.md,
+    backgroundColor: colors.primaryMuted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  workoutIcon: { fontSize: 24 },
+  workoutName: { ...typography.h4, color: colors.text },
+  workoutCount: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+  chevron: { fontSize: 20, color: colors.textMuted },
+  exerciseCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1e1e1e',
+    marginBottom: spacing.md,
+    padding: spacing.lg,
   },
-  exerciseName: { fontSize: 16, color: '#fff', fontWeight: '600' },
-  exerciseMeta: { fontSize: 13, color: '#888', marginTop: 2 },
-  metBadge: { fontSize: 13, color: '#4CAF50', backgroundColor: '#1b3a1e', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+  exerciseLeft: { flex: 1 },
+  exerciseName: { ...typography.h4, color: colors.text, marginBottom: spacing.xs },
+  exerciseMeta: { ...typography.caption, color: colors.textMuted },
 });

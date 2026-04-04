@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Alert, ScrollView } from 'react-native';
 import { useAppStore } from '../store/appStore';
+import { colors, spacing, radii, typography } from '../theme';
+import { Card, Button, Badge } from '../components/ui';
 
 function getWeeklyTotals(sessions: any[]) {
   const now = new Date();
@@ -15,10 +17,7 @@ function getWeeklyTotals(sessions: any[]) {
 
     const label = weekStart.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     const total = sessions
-      .filter((s) => {
-        const d = new Date(s.date);
-        return d >= weekStart && d < weekEnd;
-      })
+      .filter((s) => { const d = new Date(s.date); return d >= weekStart && d < weekEnd; })
       .reduce((sum, s) => sum + s.totalCalories, 0);
 
     weeks.push({ label, total: Math.round(total * 10) / 10 });
@@ -30,9 +29,7 @@ function getWeeklyTotals(sessions: any[]) {
 export default function HistoryScreen({ navigation }: { navigation: any }) {
   const { sessions, loadSessions, deleteSession } = useAppStore();
 
-  React.useEffect(() => {
-    loadSessions();
-  }, []);
+  React.useEffect(() => { loadSessions(); }, []);
 
   const handleDelete = (id: string) => {
     Alert.alert('Delete Workout', 'Are you sure?', [
@@ -46,71 +43,65 @@ export default function HistoryScreen({ navigation }: { navigation: any }) {
   const maxWeekly = Math.max(...weeklyData.map((w) => w.total), 1);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Workout History</Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Text style={styles.title}>History</Text>
 
       {sessions.length > 0 && (
         <>
-          <View style={styles.weeklySummary}>
+          <Card variant="primary" style={styles.weeklySummary}>
             <Text style={styles.weeklyLabel}>This Week</Text>
             <Text style={styles.weeklyValue}>{totalThisWeek.toFixed(1)} kcal</Text>
-          </View>
+          </Card>
 
-          <View style={styles.chartCard}>
-            <Text style={styles.chartTitle}>Weekly Calories</Text>
-            <View style={styles.chartContainer}>
-              <View style={styles.barsContainer}>
-                {weeklyData.map((week, i) => {
-                  const barHeight = week.total > 0 ? Math.max((week.total / maxWeekly) * 120, 4) : 0;
-                  return (
-                    <View key={i} style={styles.barWrapper}>
-                      <Text style={styles.barValue}>{week.total > 0 ? week.total.toFixed(0) : ''}</Text>
-                      <View style={[styles.bar, { height: barHeight, backgroundColor: week.total > 0 ? '#4CAF50' : '#333' }]} />
-                      <Text style={styles.barLabel}>{week.label}</Text>
-                    </View>
-                  );
-                })}
-              </View>
+          <Card variant="elevated" style={styles.chartCard}>
+            <Text style={styles.chartTitle}>7-Week Trend</Text>
+            <View style={styles.barsContainer}>
+              {weeklyData.map((week, i) => {
+                const barHeight = week.total > 0 ? Math.max((week.total / maxWeekly) * 100, 4) : 0;
+                return (
+                  <View key={i} style={styles.barWrapper}>
+                    <Text style={styles.barValue}>{week.total > 0 ? week.total.toFixed(0) : ''}</Text>
+                    <View style={[styles.bar, { height: barHeight, backgroundColor: week.total > 0 ? colors.primary : colors.border, opacity: week.total > 0 ? 1 : 0.3 }]} />
+                    <Text style={styles.barLabel}>{week.label}</Text>
+                  </View>
+                );
+              })}
             </View>
-          </View>
+          </Card>
         </>
       )}
 
       {sessions.length === 0 ? (
-        <Text style={styles.emptyText}>No past workouts.</Text>
+        <Card variant="glass" style={styles.emptyCard}>
+          <Text style={styles.emptyEmoji}>📋</Text>
+          <Text style={styles.emptyText}>No past workouts</Text>
+          <Text style={styles.emptySubtext}>Complete a workout to see your history</Text>
+        </Card>
       ) : (
         <FlatList
           data={sessions}
           keyExtractor={(item) => item.id}
           scrollEnabled={false}
           renderItem={({ item }) => (
-            <TouchableOpacity
+            <Card
+              variant="elevated"
               style={styles.sessionCard}
               onPress={() => navigation.navigate('Summary', { session: item })}
             >
               <View style={styles.sessionInfo}>
                 <Text style={styles.sessionDate}>
-                  {new Date(item.date).toLocaleDateString(undefined, {
-                    weekday: 'short',
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+                  {new Date(item.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
                 </Text>
-                <Text style={styles.sessionCalories}>
-                  {item.totalCalories.toFixed(1)} kcal
-                </Text>
-                <Text style={styles.sessionMeta}>
-                  {item.exercises.length} exercises • {Math.floor(item.durationSec / 60)}m {item.durationSec % 60}s
-                </Text>
+                <Text style={styles.sessionCalories}>{item.totalCalories.toFixed(1)} kcal</Text>
+                <View style={styles.sessionMetaRow}>
+                  <Badge variant="default">{item.exercises.length} exercises</Badge>
+                  <Badge variant="default">{Math.floor(item.durationSec / 60)}m {item.durationSec % 60}s</Badge>
+                </View>
               </View>
-              <TouchableOpacity
-                style={styles.deleteBtn}
-                onPress={() => handleDelete(item.id)}
-              >
-                <Text style={styles.deleteBtnText}>Del</Text>
-              </TouchableOpacity>
-            </TouchableOpacity>
+              <Button variant="ghost" size="sm" onPress={() => handleDelete(item.id)} textStyle={{ color: colors.danger }}>
+                Del
+              </Button>
+            </Card>
           )}
         />
       )}
@@ -119,48 +110,26 @@ export default function HistoryScreen({ navigation }: { navigation: any }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 24 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 24 },
-  weeklySummary: {
-    backgroundColor: '#1a2e1a',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    alignItems: 'center',
-  },
-  weeklyLabel: { color: '#888', fontSize: 14, marginBottom: 4 },
-  weeklyValue: { color: '#4CAF50', fontSize: 28, fontWeight: 'bold' },
-  chartCard: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-  },
-  chartTitle: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginBottom: 12, textAlign: 'center' },
-  chartContainer: { padding: 8 },
-  barsContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 160 },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
+  title: { ...typography.h1, color: colors.text, marginBottom: spacing['2xl'] },
+  weeklySummary: { alignItems: 'center', marginBottom: spacing.lg, padding: spacing.xl },
+  weeklyLabel: { ...typography.caption, color: colors.textSecondary, marginBottom: spacing.xs },
+  weeklyValue: { fontSize: 36, fontWeight: '800', color: colors.primary, letterSpacing: -1 },
+  chartCard: { marginBottom: spacing['2xl'], padding: spacing.lg },
+  chartTitle: { ...typography.h4, color: colors.text, textAlign: 'center', marginBottom: spacing.lg },
+  barsContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 140, paddingHorizontal: spacing.sm },
   barWrapper: { alignItems: 'center', flex: 1 },
-  bar: { width: 24, borderRadius: 4, marginBottom: 4 },
-  barValue: { color: '#4CAF50', fontSize: 10, marginBottom: 4 },
-  barLabel: { color: '#888', fontSize: 9, marginTop: 4 },
-  emptyText: { color: '#666', fontSize: 16, textAlign: 'center', marginTop: 40 },
-  sessionCard: {
-    flexDirection: 'row',
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    alignItems: 'center',
-  },
+  bar: { width: 28, borderRadius: radii.sm },
+  barValue: { ...typography.caption, color: colors.primary, marginBottom: spacing.xs },
+  barLabel: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+  emptyCard: { alignItems: 'center', padding: spacing['3xl'] },
+  emptyEmoji: { fontSize: 48, marginBottom: spacing.lg },
+  emptyText: { ...typography.h4, color: colors.text, marginBottom: spacing.sm },
+  emptySubtext: { ...typography.bodySm, color: colors.textMuted },
+  sessionCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md, padding: spacing.lg },
   sessionInfo: { flex: 1 },
-  sessionDate: { color: '#aaa', fontSize: 14, marginBottom: 4 },
-  sessionCalories: { color: '#4CAF50', fontSize: 22, fontWeight: 'bold' },
-  sessionMeta: { color: '#888', fontSize: 13, marginTop: 4 },
-  deleteBtn: {
-    backgroundColor: '#3a1e1e',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  deleteBtnText: { color: '#ff6b6b', fontSize: 12, fontWeight: 'bold' },
+  sessionDate: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs },
+  sessionCalories: { ...typography.h2, color: colors.primary, marginBottom: spacing.sm },
+  sessionMetaRow: { flexDirection: 'row', gap: spacing.sm },
 });

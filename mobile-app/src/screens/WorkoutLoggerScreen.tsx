@@ -1,276 +1,150 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
 import { useAppStore } from '../store/appStore';
 import { caloriesBurned } from '../engine/calorieEngine';
+import { colors, spacing, radii, typography } from '../theme';
+import { Card, Button, Badge } from '../components/ui';
 
 export default function WorkoutLoggerScreen({ navigation }: { navigation: any }) {
-  const {
-    activeSession,
-    profile,
-    updateExerciseSet,
-    removeExercise,
-    getLiveCalories,
-    findExercise,
-    cancelSession,
-  } = useAppStore();
-
+  const { activeSession, profile, updateExerciseSet, removeExercise, getLiveCalories, findExercise, cancelSession } = useAppStore();
   const live = getLiveCalories();
 
   return (
     <View style={styles.container}>
-      {/* Live calorie header */}
-      <View style={styles.calorieHeader}>
+      <Card variant="primary" style={styles.calorieHeader}>
         <Text style={styles.calorieLabel}>Total Calories</Text>
         <Text style={styles.calorieValue}>{live.totalCal.toFixed(1)}</Text>
         <View style={styles.calorieRow}>
-          <Text style={styles.calorieSub}>Active: {live.activeCal.toFixed(1)}</Text>
-          <Text style={styles.calorieSub}>EPOC: {live.epocCal.toFixed(1)}</Text>
+          <Badge variant="primary">Active: {live.activeCal.toFixed(1)}</Badge>
+          <Badge variant="warning">EPOC: {live.epocCal.toFixed(1)}</Badge>
         </View>
         <Text style={styles.durationText}>
           Est. Duration: {Math.floor(live.durationSec / 60)}m {live.durationSec % 60}s
         </Text>
-      </View>
+      </Card>
 
-      <ScrollView style={styles.exerciseList}>
+      <ScrollView style={styles.exerciseList} contentContainerStyle={styles.exerciseListContent}>
         {activeSession.map((logged, exerciseIndex) => {
           const exercise = findExercise(logged.exerciseKey);
           if (!exercise || !profile) return null;
 
           return (
-            <View key={exerciseIndex} style={styles.exerciseCard}>
+            <Card key={exerciseIndex} variant="elevated" style={styles.exerciseCard}>
               <View style={styles.exerciseCardHeader}>
                 <View>
                   <Text style={styles.exerciseCardName}>{exercise.name}</Text>
                   <Text style={styles.exerciseCardMuscle}>{exercise.muscle}</Text>
                 </View>
-                <TouchableOpacity
-                  style={styles.removeBtn}
-                  onPress={() => removeExercise(exerciseIndex)}
-                >
-                  <Text style={styles.removeBtnText}>✕</Text>
-                </TouchableOpacity>
+                <Button variant="ghost" size="sm" onPress={() => removeExercise(exerciseIndex)} textStyle={{ color: colors.danger }}>
+                  ✕
+                </Button>
               </View>
 
               {logged.sets.map((set, setIndex) => {
-                const result = caloriesBurned(
-                  logged.exerciseKey,
-                  1,
-                  set.reps,
-                  profile.bodyWeightKg,
-                  set.weight,
-                  exercise.met,
-                );
+                const result = caloriesBurned(logged.exerciseKey, 1, set.reps, profile.bodyWeightKg, set.weight, exercise.met);
 
                 return (
                   <View key={setIndex} style={styles.setRow}>
-                    <Text style={styles.setLabel}>Set {setIndex + 1}</Text>
-
-                    <View style={styles.inputGroup}>
-                      <Text style={[styles.inputLabel, set.weight <= 0 && styles.inputLabelWarn]}>
-                        Weight (kg)
-                      </Text>
-                      <TextInput
-                        style={[styles.input, set.weight <= 0 && styles.inputWarn]}
-                        value={set.weight > 0 ? set.weight.toString() : ''}
-                        placeholder="e.g. 10"
-                        placeholderTextColor="#555"
-                        onChangeText={(val) => {
-                          const w = parseFloat(val);
-                          // FIX: w <= 0 rejects zero AND negatives (was w < 0 before)
-                          if (isNaN(w) || w <= 0) return;
-                          updateExerciseSet(exerciseIndex, setIndex, w, set.reps);
-                        }}
-                        keyboardType="decimal-pad"
-                      />
+                    <View style={styles.setRowHeader}>
+                      <Text style={styles.setLabel}>Set {setIndex + 1}</Text>
+                      <Badge variant="primary">{result.totalCal.toFixed(1)} kcal</Badge>
                     </View>
 
-                    <View style={styles.inputGroup}>
-                      <Text style={[styles.inputLabel, set.reps <= 0 && styles.inputLabelWarn]}>
-                        Reps
-                      </Text>
-                      <TextInput
-                        style={[styles.input, set.reps <= 0 && styles.inputWarn]}
-                        value={set.reps > 0 ? set.reps.toString() : ''}
-                        placeholder="e.g. 10"
-                        placeholderTextColor="#555"
-                        onChangeText={(val) => {
-                          const r = parseInt(val, 10);
-                          // FIX: r <= 0 rejects zero AND negatives (was r < 0 before)
-                          if (isNaN(r) || r <= 0) return;
-                          updateExerciseSet(exerciseIndex, setIndex, set.weight, r);
-                        }}
-                        keyboardType="number-pad"
-                      />
-                    </View>
+                    <View style={styles.inputsRow}>
+                      <View style={styles.inputGroup}>
+                        <Text style={[styles.inputLabel, set.weight <= 0 && styles.inputLabelWarn]}>Weight (kg)</Text>
+                        <TextInput
+                          style={[styles.input, set.weight <= 0 && styles.inputWarn]}
+                          value={set.weight > 0 ? set.weight.toString() : ''}
+                          placeholder="e.g. 10"
+                          placeholderTextColor={colors.textMuted}
+                          onChangeText={(val) => {
+                            const w = parseFloat(val);
+                            if (isNaN(w) || w <= 0) return;
+                            updateExerciseSet(exerciseIndex, setIndex, w, set.reps);
+                          }}
+                          keyboardType="decimal-pad"
+                        />
+                      </View>
 
-                    <Text style={styles.setCalories}>
-                      {result.totalCal.toFixed(1)} kcal
-                    </Text>
+                      <View style={styles.inputGroup}>
+                        <Text style={[styles.inputLabel, set.reps <= 0 && styles.inputLabelWarn]}>Reps</Text>
+                        <TextInput
+                          style={[styles.input, set.reps <= 0 && styles.inputWarn]}
+                          value={set.reps > 0 ? set.reps.toString() : ''}
+                          placeholder="e.g. 10"
+                          placeholderTextColor={colors.textMuted}
+                          onChangeText={(val) => {
+                            const r = parseInt(val, 10);
+                            if (isNaN(r) || r <= 0) return;
+                            updateExerciseSet(exerciseIndex, setIndex, set.weight, r);
+                          }}
+                          keyboardType="number-pad"
+                        />
+                      </View>
+                    </View>
                   </View>
                 );
               })}
 
-              <TouchableOpacity
-                style={styles.addSetBtn}
-                onPress={() => {
-                  const lastSet = logged.sets[logged.sets.length - 1];
-                  updateExerciseSet(
-                    exerciseIndex,
-                    logged.sets.length,
-                    lastSet.weight,
-                    lastSet.reps,
-                  );
-                }}
-              >
-                <Text style={styles.addSetBtnText}>+ Add Set</Text>
-              </TouchableOpacity>
-            </View>
+              <Button variant="secondary" size="sm" fullWidth style={styles.addSetBtn} onPress={() => {
+                const lastSet = logged.sets[logged.sets.length - 1];
+                updateExerciseSet(exerciseIndex, logged.sets.length, lastSet.weight, lastSet.reps);
+              }}>
+                + Add Set
+              </Button>
+            </Card>
           );
         })}
 
-        <TouchableOpacity
-          style={styles.addExerciseBtn}
-          onPress={() => navigation.navigate('ExerciseSelect')}
-        >
-          <Text style={styles.addExerciseBtnText}>+ Add Exercise</Text>
-        </TouchableOpacity>
+        <Button variant="ghost" fullWidth style={styles.addExerciseBtn} onPress={() => navigation.navigate('ExerciseSelect')}>
+          + Add Exercise
+        </Button>
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity
-          style={[styles.finishBtn, activeSession.length === 0 && styles.finishBtnDisabled]}
-          onPress={() => {
-            const session = useAppStore.getState().finishSession();
-            if (session) {
-              navigation.navigate('Summary', { session });
-            }
-          }}
-          disabled={activeSession.length === 0}
-        >
-          <Text style={styles.finishBtnText}>Finish Workout</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.cancelBtn}
-          onPress={() => {
-            Alert.alert(
-              'Cancel Workout',
-              'Are you sure? All progress will be lost.',
-              [
-                { text: 'Continue', style: 'cancel' },
-                {
-                  text: 'Discard',
-                  style: 'destructive',
-                  onPress: () => {
-                    cancelSession();
-                    navigation.navigate('Home');
-                  },
-                },
-              ],
-            );
-          }}
-        >
-          <Text style={styles.cancelBtnText}>Cancel Workout</Text>
-        </TouchableOpacity>
+        <Button variant="primary" size="lg" fullWidth disabled={activeSession.length === 0} onPress={() => {
+          const session = useAppStore.getState().finishSession();
+          if (session) navigation.navigate('Summary', { session });
+        }}>
+          Finish Workout
+        </Button>
+        <Button variant="ghost" size="md" fullWidth onPress={() => {
+          Alert.alert('Cancel Workout', 'Are you sure? All progress will be lost.', [
+            { text: 'Continue', style: 'cancel' },
+            { text: 'Discard', style: 'destructive', onPress: () => { cancelSession(); navigation.navigate('Home'); } },
+          ]);
+        }} textStyle={{ color: colors.danger }}>
+          Cancel Workout
+        </Button>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212' },
-  calorieHeader: {
-    backgroundColor: '#1a2e1a',
-    padding: 24,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#4CAF50',
-  },
-  calorieLabel: { color: '#888', fontSize: 14, marginBottom: 4 },
-  calorieValue: { color: '#4CAF50', fontSize: 48, fontWeight: 'bold' },
-  calorieRow: { flexDirection: 'row', gap: 24, marginTop: 8 },
-  calorieSub: { color: '#aaa', fontSize: 14 },
-  durationText: { color: '#888', fontSize: 13, marginTop: 8 },
-  exerciseList: { flex: 1, padding: 16 },
-  exerciseCard: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  exerciseCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  exerciseCardName: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  exerciseCardMuscle: { color: '#888', fontSize: 13, marginTop: 2 },
-  removeBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#3a1e1e',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  removeBtnText: { color: '#ff6b6b', fontSize: 14, fontWeight: 'bold' },
-  setRow: { backgroundColor: '#252525', borderRadius: 8, padding: 12, marginBottom: 8 },
-  setLabel: { color: '#aaa', fontSize: 13, marginBottom: 8 },
-  inputGroup: { marginBottom: 8 },
-  inputLabel: { color: '#888', fontSize: 12, marginBottom: 4 },
-  input: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: '#fff',
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  inputWarn: { borderColor: '#ff6b6b' },
-  inputLabelWarn: { color: '#ff6b6b' },
-  setCalories: {
-    color: '#4CAF50',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'right',
-    marginTop: 4,
-  },
-  addSetBtn: {
-    padding: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#333',
-    borderRadius: 8,
-    marginTop: 8,
-  },
-  addSetBtnText: { color: '#aaa', fontSize: 14 },
-  addExerciseBtn: {
-    padding: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#4CAF50',
-    borderRadius: 12,
-    marginBottom: 16,
-  },
-  addExerciseBtnText: { color: '#4CAF50', fontSize: 16, fontWeight: 'bold' },
-  footer: { padding: 16, borderTopWidth: 1, borderTopColor: '#222' },
-  finishBtn: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 12,
-    padding: 18,
-    alignItems: 'center',
-  },
-  finishBtnDisabled: { backgroundColor: '#2a4a2a', opacity: 0.5 },
-  finishBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  cancelBtn: { padding: 16, alignItems: 'center', marginTop: 12 },
-  cancelBtnText: { color: '#ff6b6b', fontSize: 16 },
+  container: { flex: 1, backgroundColor: colors.background },
+  calorieHeader: { margin: spacing['2xl'], marginBottom: 0, alignItems: 'center', padding: spacing['2xl'] },
+  calorieLabel: { ...typography.caption, color: colors.textSecondary, marginBottom: spacing.xs },
+  calorieValue: { fontSize: 52, fontWeight: '800', color: colors.primary, letterSpacing: -1 },
+  calorieRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md },
+  durationText: { ...typography.caption, color: colors.textMuted, marginTop: spacing.md },
+  exerciseList: { flex: 1 },
+  exerciseListContent: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
+  exerciseCard: { marginBottom: spacing.lg },
+  exerciseCardHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.lg },
+  exerciseCardName: { ...typography.h3, color: colors.text },
+  exerciseCardMuscle: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+  setRow: { backgroundColor: colors.surface, borderRadius: radii.md, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border },
+  setRowHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
+  setLabel: { ...typography.label, color: colors.textSecondary },
+  inputsRow: { flexDirection: 'row', gap: spacing.md },
+  inputGroup: { flex: 1 },
+  inputLabel: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs },
+  input: { backgroundColor: colors.background, borderRadius: radii.sm, padding: spacing.md, fontSize: 16, color: colors.text, borderWidth: 1, borderColor: colors.border },
+  inputWarn: { borderColor: colors.danger },
+  inputLabelWarn: { color: colors.danger },
+  addSetBtn: { marginTop: spacing.sm },
+  addExerciseBtn: { paddingVertical: spacing.lg, borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed' },
+  footer: { padding: spacing['2xl'], borderTopWidth: 1, borderTopColor: colors.border, gap: spacing.sm },
 });
