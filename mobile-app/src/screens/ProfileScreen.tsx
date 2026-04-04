@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useAppStore } from '../store/appStore';
 
 export default function ProfileScreen({ navigation }: { navigation: any }) {
@@ -7,7 +7,9 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
 
   const [weight, setWeight] = React.useState(profile ? profile.bodyWeightKg.toString() : '');
   const [age, setAge] = React.useState(profile ? profile.age.toString() : '');
-  const [gender, setGender] = React.useState<'male' | 'female' | 'other'>(profile?.gender || 'male');
+  const [gender, setGender] = React.useState<'male' | 'female' | 'other'>(
+    profile?.gender || 'male',
+  );
   const [height, setHeight] = React.useState(profile ? profile.heightCm.toString() : '');
 
   useEffect(() => {
@@ -28,8 +30,17 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
     const ageNum = parseInt(age, 10);
     const heightNum = parseFloat(height);
 
-    if (!weightNum || !ageNum || !heightNum) {
-      Alert.alert('Error', 'Please fill in all fields');
+    // FIX: added > 0 checks — previously !weightNum passed for negatives like -70
+    if (!weightNum || weightNum <= 0) {
+      Alert.alert('Invalid Weight', 'Please enter a valid body weight greater than 0 kg');
+      return;
+    }
+    if (!ageNum || ageNum <= 0 || ageNum > 120) {
+      Alert.alert('Invalid Age', 'Please enter a valid age between 1 and 120');
+      return;
+    }
+    if (!heightNum || heightNum <= 0) {
+      Alert.alert('Invalid Height', 'Please enter a valid height greater than 0 cm');
       return;
     }
 
@@ -45,7 +56,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Profile Setup</Text>
 
       <Text style={styles.label}>Body Weight (kg)</Text>
@@ -55,6 +66,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
         onChangeText={setWeight}
         keyboardType="decimal-pad"
         placeholder="e.g. 70"
+        placeholderTextColor="#555"
       />
 
       <Text style={styles.label}>Age</Text>
@@ -64,6 +76,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
         onChangeText={setAge}
         keyboardType="number-pad"
         placeholder="e.g. 25"
+        placeholderTextColor="#555"
       />
 
       <Text style={styles.label}>Gender</Text>
@@ -88,12 +101,13 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
         onChangeText={setHeight}
         keyboardType="decimal-pad"
         placeholder="e.g. 175"
+        placeholderTextColor="#555"
       />
 
       <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
         <Text style={styles.saveBtnText}>Save Profile</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -129,6 +143,7 @@ const styles = StyleSheet.create({
     padding: 18,
     alignItems: 'center',
     marginTop: 32,
+    marginBottom: 48,
   },
   saveBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
 });

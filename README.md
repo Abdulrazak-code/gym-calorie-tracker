@@ -1,66 +1,25 @@
-# 🏋️ Gym Calorie Tracker
+# Gym Calorie Tracker
 
-A real-time calorie burn tracker for strength training. Calculates calories based on **actual weight lifted × reps × sets** — not just time spent at the gym.
+A real-time calorie burn tracker for strength training that calculates calories based on **actual weight lifted × reps × sets** — not just time spent at the gym.
 
 ## How It Works
 
-Most fitness apps estimate calories from **duration** alone. This app uses a scientifically-grounded formula:
+Most fitness apps estimate calories from duration alone. This app uses the physics of lifting:
 
 1. **Duration estimation** — `sets × (reps × 3s) + (sets - 1) × 75s rest`
-2. **MET lookup** — Each exercise has a Metabolic Equivalent value from the 2024 Compendium of Physical Activities
-3. **Intensity adjustment** — Epley 1RM formula classifies effort as light/moderate/vigorous, adjusting MET accordingly
+2. **MET lookup** — exercise intensity value from the 2024 Compendium of Physical Activities
+3. **Epley 1RM formula** — classifies your effort as light / moderate / vigorous based on dumbbell weight
 4. **Calorie calculation** — `MET × body_weight_kg × duration_hours`
-5. **EPOC afterburn** — +7% for post-exercise oxygen consumption
+5. **EPOC afterburn** — adds 7% for post-workout metabolism boost
 
 ### Example
+> 70kg person | Bicep Curl | 10kg dumbbell | 3 sets × 10 reps → **~22.8 kcal**
 
-> 70kg person, Bicep Curl, 10kg dumbbell, 3×10 reps
->
-> Duration: 240s | 1RM: 13.3kg | 75% → Vigorous → MET: 4.55
->
-> Active: 21.3 kcal | With EPOC: **22.8 kcal**
+---
 
-Lift 20kg instead → intensity goes up → more calories burned.
+## Installation
 
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | React Native (Expo) |
-| Language | TypeScript |
-| State | Zustand |
-| Storage | AsyncStorage |
-| Navigation | React Navigation |
-| Exercise Data | WGER API (cached locally) |
-| Calorie Engine | Custom TypeScript module |
-
-## Project Structure
-
-```
-├── engine/                    # Python calorie engine (Phase 0)
-│   ├── calorie_engine.py      # Core formula implementation
-│   ├── test_calorie_engine.py # 23 unit tests
-│   └── requirements.txt
-├── mobile-app/                # React Native app (Phase 1+)
-│   ├── src/
-│   │   ├── api/wger.ts        # WGER API service with caching
-│   │   ├── engine/            # TypeScript calorie engine
-│   │   ├── screens/           # App screens
-│   │   ├── store/             # Zustand state management
-│   │   └── types/             # TypeScript interfaces
-│   └── src/__tests__/         # Jest tests
-└── README.md
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 20+
-- Python 3.10+ (for the calorie engine tests)
-- Expo Go app on your phone (for mobile testing)
-
-### Mobile App
+### Mobile App (React Native / Expo)
 
 ```bash
 cd mobile-app
@@ -68,42 +27,95 @@ npm install
 npx expo start
 ```
 
-Then scan the QR code with Expo Go on your phone, or press `w` for web.
+- Press `a` to open on Android emulator
+- Press `i` to open on iOS simulator (Mac only)
+- Scan the QR code with the Expo Go app on your phone
+
+**Requirements:** Node.js 18+, Expo CLI (`npm install -g expo`)
 
 ### Python Calorie Engine
 
 ```bash
 cd engine
 pip install -r requirements.txt
+python calorie_engine.py
+```
+
+**Run tests:**
+```bash
+cd engine
 python -m pytest test_calorie_engine.py -v
 ```
 
-### TypeScript Tests
+---
 
-```bash
-cd mobile-app
-npx jest
+## Project Structure
+
+```
+gym-calorie-tracker/
+├── engine/                        # Python calorie engine (validated first)
+│   ├── calorie_engine.py          # MET table, Epley 1RM, EPOC formula
+│   ├── test_calorie_engine.py     # 23 unit tests
+│   └── requirements.txt
+│
+└── mobile-app/                    # React Native app
+    ├── App.tsx                    # Navigation + first-launch detection
+    ├── src/
+    │   ├── api/wger.ts            # WGER exercise API (896+ exercises, 7-day cache)
+    │   ├── engine/
+    │   │   ├── calorieEngine.ts   # TypeScript port of Python engine
+    │   │   └── exercises.ts       # Exercise library + WGER integration
+    │   ├── screens/
+    │   │   ├── OnboardingScreen   # First-launch intro + profile setup
+    │   │   ├── HomeScreen         # Dashboard, weekly stats, recent workouts
+    │   │   ├── ProfileScreen      # Body weight, age, gender, height
+    │   │   ├── ExerciseSelectScreen # Browse/search 896+ exercises by muscle
+    │   │   ├── WorkoutLoggerScreen  # Live calorie counter, sets/reps/weight
+    │   │   ├── SummaryScreen      # Post-workout breakdown + share
+    │   │   └── HistoryScreen      # Past sessions + 7-week bar chart
+    │   ├── store/appStore.ts      # Zustand state management
+    │   └── types/index.ts         # TypeScript interfaces
+    └── src/__tests__/
+        └── calorieEngine.test.ts  # 21 Jest unit tests
 ```
 
-## Screens
+---
 
-1. **Home** — Dashboard with "Start Workout" and recent sessions
-2. **Profile** — Body weight, age, gender, height setup
-3. **Exercise Select** — Browse/search 896+ exercises from WGER API (cached)
-4. **Workout Logger** — Enter sets/reps/weight with **live calorie counter**
-5. **Summary** — Full session breakdown (active + EPOC calories, duration, muscles)
-6. **History** — Past workouts with delete option
+## Tech Stack
 
-## Development Phases
+| Layer | Technology |
+|---|---|
+| Mobile Framework | React Native + Expo |
+| Language | TypeScript (strict mode) |
+| State Management | Zustand |
+| Persistence | AsyncStorage (offline-first) |
+| Exercise Library | WGER API + local cache |
+| Calorie Engine | Custom MET + Epley formula |
+| Python Engine | Pure Python 3 |
+| Testing | pytest (Python) + Jest (TypeScript) |
 
-- [x] Phase 0 — Validate calorie formula (Python)
-- [x] Phase 1 — Core app skeleton (6 screens)
-- [x] Phase 2 — WGER API integration (896+ exercises, cached)
-- [ ] Phase 3 — Charts & progress graphs
-- [ ] Phase 4 — Polish (animations, haptics, sharing)
-- [ ] Phase 5 — Launch
-- [ ] Phase 6 — AI Camera Mode (optional)
+---
 
-## License
+## Test Results
 
-MIT
+```bash
+# Python
+cd engine && python -m pytest -v
+# 23/23 passing ✅
+
+# TypeScript
+cd mobile-app && npm test
+# 21/21 passing ✅
+```
+
+---
+
+## Roadmap
+
+- ✅ Phase 0 — Python calorie engine (validated)
+- ✅ Phase 1 — Core React Native app
+- ✅ Phase 2 — WGER API exercise library (896+ exercises)
+- ✅ Phase 3 — Charts & workout history
+- ✅ Phase 4 — Polish, onboarding, share
+- ⏳ Phase 5 — App Store / Play Store launch
+- 🔮 Phase 6 — AI Camera Mode (MediaPipe pose estimation, auto rep counting)

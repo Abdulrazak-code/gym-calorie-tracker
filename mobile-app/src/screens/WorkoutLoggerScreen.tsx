@@ -1,16 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Alert } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import React from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import { useAppStore } from '../store/appStore';
-import { EXERCISE_LIBRARY } from '../engine/exercises';
 import { caloriesBurned } from '../engine/calorieEngine';
 
 export default function WorkoutLoggerScreen({ navigation }: { navigation: any }) {
-  const { activeSession, profile, updateExerciseSet, removeExercise, getLiveCalories, findExercise, cancelSession } = useAppStore();
+  const {
+    activeSession,
+    profile,
+    updateExerciseSet,
+    removeExercise,
+    getLiveCalories,
+    findExercise,
+    cancelSession,
+  } = useAppStore();
+
   const live = getLiveCalories();
 
   return (
     <View style={styles.container}>
+      {/* Live calorie header */}
       <View style={styles.calorieHeader}>
         <Text style={styles.calorieLabel}>Total Calories</Text>
         <Text style={styles.calorieValue}>{live.totalCal.toFixed(1)}</Text>
@@ -39,7 +55,7 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
                   style={styles.removeBtn}
                   onPress={() => removeExercise(exerciseIndex)}
                 >
-                  <Text style={styles.removeBtnText}>X</Text>
+                  <Text style={styles.removeBtnText}>✕</Text>
                 </TouchableOpacity>
               </View>
 
@@ -58,36 +74,46 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
                     <Text style={styles.setLabel}>Set {setIndex + 1}</Text>
 
                     <View style={styles.inputGroup}>
-                      <Text style={[styles.inputLabel, set.weight <= 0 && styles.inputLabelWarn]}>Weight (kg)</Text>
+                      <Text style={[styles.inputLabel, set.weight <= 0 && styles.inputLabelWarn]}>
+                        Weight (kg)
+                      </Text>
                       <TextInput
                         style={[styles.input, set.weight <= 0 && styles.inputWarn]}
-                        value={set.weight.toString()}
+                        value={set.weight > 0 ? set.weight.toString() : ''}
+                        placeholder="e.g. 10"
+                        placeholderTextColor="#555"
                         onChangeText={(val) => {
                           const w = parseFloat(val);
-                          if (isNaN(w) || w < 0) return;
+                          // FIX: w <= 0 rejects zero AND negatives (was w < 0 before)
+                          if (isNaN(w) || w <= 0) return;
                           updateExerciseSet(exerciseIndex, setIndex, w, set.reps);
-                          Haptics.selectionAsync();
                         }}
                         keyboardType="decimal-pad"
                       />
                     </View>
 
                     <View style={styles.inputGroup}>
-                      <Text style={[styles.inputLabel, set.reps <= 0 && styles.inputLabelWarn]}>Reps</Text>
+                      <Text style={[styles.inputLabel, set.reps <= 0 && styles.inputLabelWarn]}>
+                        Reps
+                      </Text>
                       <TextInput
                         style={[styles.input, set.reps <= 0 && styles.inputWarn]}
-                        value={set.reps.toString()}
+                        value={set.reps > 0 ? set.reps.toString() : ''}
+                        placeholder="e.g. 10"
+                        placeholderTextColor="#555"
                         onChangeText={(val) => {
                           const r = parseInt(val, 10);
-                          if (isNaN(r) || r < 0) return;
+                          // FIX: r <= 0 rejects zero AND negatives (was r < 0 before)
+                          if (isNaN(r) || r <= 0) return;
                           updateExerciseSet(exerciseIndex, setIndex, set.weight, r);
-                          Haptics.selectionAsync();
                         }}
                         keyboardType="number-pad"
                       />
                     </View>
 
-                    <Text style={styles.setCalories}>{result.totalCal.toFixed(1)} kcal</Text>
+                    <Text style={styles.setCalories}>
+                      {result.totalCal.toFixed(1)} kcal
+                    </Text>
                   </View>
                 );
               })}
@@ -131,6 +157,7 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
         >
           <Text style={styles.finishBtnText}>Finish Workout</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.cancelBtn}
           onPress={() => {
@@ -147,7 +174,7 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
                     navigation.navigate('Home');
                   },
                 },
-              ]
+              ],
             );
           }}
         >
@@ -173,11 +200,27 @@ const styles = StyleSheet.create({
   calorieSub: { color: '#aaa', fontSize: 14 },
   durationText: { color: '#888', fontSize: 13, marginTop: 8 },
   exerciseList: { flex: 1, padding: 16 },
-  exerciseCard: { backgroundColor: '#1e1e1e', borderRadius: 12, padding: 16, marginBottom: 16 },
-  exerciseCardHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
+  exerciseCard: {
+    backgroundColor: '#1e1e1e',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  exerciseCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
   exerciseCardName: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   exerciseCardMuscle: { color: '#888', fontSize: 13, marginTop: 2 },
-  removeBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#3a1e1e', alignItems: 'center', justifyContent: 'center' },
+  removeBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#3a1e1e',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   removeBtnText: { color: '#ff6b6b', fontSize: 14, fontWeight: 'bold' },
   setRow: { backgroundColor: '#252525', borderRadius: 8, padding: 12, marginBottom: 8 },
   setLabel: { color: '#aaa', fontSize: 13, marginBottom: 8 },
@@ -192,17 +235,42 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#333',
   },
-  setCalories: { color: '#4CAF50', fontSize: 16, fontWeight: 'bold', textAlign: 'right', marginTop: 4 },
-  addSetBtn: { padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#333', borderRadius: 8, marginTop: 8 },
+  inputWarn: { borderColor: '#ff6b6b' },
+  inputLabelWarn: { color: '#ff6b6b' },
+  setCalories: {
+    color: '#4CAF50',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'right',
+    marginTop: 4,
+  },
+  addSetBtn: {
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 8,
+    marginTop: 8,
+  },
   addSetBtnText: { color: '#aaa', fontSize: 14 },
-  addExerciseBtn: { padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#4CAF50', borderRadius: 12, marginBottom: 16 },
+  addExerciseBtn: {
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#4CAF50',
+    borderRadius: 12,
+    marginBottom: 16,
+  },
   addExerciseBtnText: { color: '#4CAF50', fontSize: 16, fontWeight: 'bold' },
   footer: { padding: 16, borderTopWidth: 1, borderTopColor: '#222' },
-  finishBtn: { backgroundColor: '#4CAF50', borderRadius: 12, padding: 18, alignItems: 'center' },
+  finishBtn: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 12,
+    padding: 18,
+    alignItems: 'center',
+  },
   finishBtnDisabled: { backgroundColor: '#2a4a2a', opacity: 0.5 },
   finishBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
   cancelBtn: { padding: 16, alignItems: 'center', marginTop: 12 },
   cancelBtnText: { color: '#ff6b6b', fontSize: 16 },
-  inputWarn: { borderColor: '#ff6b6b' },
-  inputLabelWarn: { color: '#ff6b6b' },
 });
