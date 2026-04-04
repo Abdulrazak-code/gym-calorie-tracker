@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Alert } from 'react-native';
 import { useAppStore } from '../store/appStore';
 import { EXERCISE_LIBRARY } from '../engine/exercises';
 import { caloriesBurned } from '../engine/calorieEngine';
 
 export default function WorkoutLoggerScreen({ navigation }: { navigation: any }) {
-  const { activeSession, profile, updateExerciseSet, removeExercise, getLiveCalories, findExercise } = useAppStore();
+  const { activeSession, profile, updateExerciseSet, removeExercise, getLiveCalories, findExercise, cancelSession } = useAppStore();
   const live = getLiveCalories();
 
   return (
@@ -57,12 +57,13 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
                     <Text style={styles.setLabel}>Set {setIndex + 1}</Text>
 
                     <View style={styles.inputGroup}>
-                      <Text style={styles.inputLabel}>Weight (kg)</Text>
+                      <Text style={[styles.inputLabel, set.weight <= 0 && styles.inputLabelWarn]}>Weight (kg)</Text>
                       <TextInput
-                        style={styles.input}
+                        style={[styles.input, set.weight <= 0 && styles.inputWarn]}
                         value={set.weight.toString()}
                         onChangeText={(val) => {
-                          const w = parseFloat(val) || 0;
+                          const w = parseFloat(val);
+                          if (isNaN(w) || w < 0) return;
                           updateExerciseSet(exerciseIndex, setIndex, w, set.reps);
                         }}
                         keyboardType="decimal-pad"
@@ -70,12 +71,13 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
                     </View>
 
                     <View style={styles.inputGroup}>
-                      <Text style={styles.inputLabel}>Reps</Text>
+                      <Text style={[styles.inputLabel, set.reps <= 0 && styles.inputLabelWarn]}>Reps</Text>
                       <TextInput
-                        style={styles.input}
+                        style={[styles.input, set.reps <= 0 && styles.inputWarn]}
                         value={set.reps.toString()}
                         onChangeText={(val) => {
-                          const r = parseInt(val, 10) || 0;
+                          const r = parseInt(val, 10);
+                          if (isNaN(r) || r < 0) return;
                           updateExerciseSet(exerciseIndex, setIndex, set.weight, r);
                         }}
                         keyboardType="number-pad"
@@ -115,15 +117,38 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
 
       <View style={styles.footer}>
         <TouchableOpacity
-          style={styles.finishBtn}
+          style={[styles.finishBtn, activeSession.length === 0 && styles.finishBtnDisabled]}
           onPress={() => {
             const session = useAppStore.getState().finishSession();
             if (session) {
               navigation.navigate('Summary', { session });
             }
           }}
+          disabled={activeSession.length === 0}
         >
           <Text style={styles.finishBtnText}>Finish Workout</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.cancelBtn}
+          onPress={() => {
+            Alert.alert(
+              'Cancel Workout',
+              'Are you sure? All progress will be lost.',
+              [
+                { text: 'Continue', style: 'cancel' },
+                {
+                  text: 'Discard',
+                  style: 'destructive',
+                  onPress: () => {
+                    cancelSession();
+                    navigation.navigate('Home');
+                  },
+                },
+              ]
+            );
+          }}
+        >
+          <Text style={styles.cancelBtnText}>Cancel Workout</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -171,5 +196,10 @@ const styles = StyleSheet.create({
   addExerciseBtnText: { color: '#4CAF50', fontSize: 16, fontWeight: 'bold' },
   footer: { padding: 16, borderTopWidth: 1, borderTopColor: '#222' },
   finishBtn: { backgroundColor: '#4CAF50', borderRadius: 12, padding: 18, alignItems: 'center' },
+  finishBtnDisabled: { backgroundColor: '#2a4a2a', opacity: 0.5 },
   finishBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  cancelBtn: { padding: 16, alignItems: 'center', marginTop: 12 },
+  cancelBtnText: { color: '#ff6b6b', fontSize: 16 },
+  inputWarn: { borderColor: '#ff6b6b' },
+  inputLabelWarn: { color: '#ff6b6b' },
 });

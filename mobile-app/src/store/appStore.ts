@@ -90,21 +90,21 @@ export const useAppStore = create<AppState>((set, get) => ({
       const exercise = get().findExercise(logged.exerciseKey);
       if (!exercise) continue;
 
-      const totalSets = logged.sets.length;
-      const totalReps = logged.sets.reduce((sum, s) => sum + s.reps, 0);
-      const avgWeight = logged.sets.reduce((sum, s) => sum + s.weight, 0) / totalSets;
-
-      const result = caloriesBurned(
-        logged.exerciseKey,
-        totalSets,
-        Math.round(totalReps / totalSets),
-        profile.bodyWeightKg,
-        avgWeight,
-        exercise.met,
-      );
-
-      totalActiveCal += result.activeCal;
-      totalDurationSec += result.durationSec;
+      for (const set of logged.sets) {
+        const result = caloriesBurned(
+          logged.exerciseKey,
+          1,
+          set.reps,
+          profile.bodyWeightKg,
+          set.weight,
+          exercise.met,
+        );
+        totalActiveCal += result.activeCal;
+        totalDurationSec += result.durationSec;
+      }
+      if (logged.sets.length > 1) {
+        totalDurationSec += (logged.sets.length - 1) * logged.restTimeSec;
+      }
     }
 
     const totalEpocCal = totalActiveCal * 0.07;
