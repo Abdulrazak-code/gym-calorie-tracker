@@ -1,12 +1,77 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, Alert } from 'react-native';
 import { useAppStore } from '../store/appStore';
 import { caloriesBurned } from '../engine/calorieEngine';
 import { colors, spacing, radii, typography } from '../theme';
 import { Card, Button, Badge } from '../components/ui';
 
+function SetInput({ exerciseIndex, setIndex, initialWeight, initialReps, profile, exerciseKey, met }: {
+  exerciseIndex: number;
+  setIndex: number;
+  initialWeight: number;
+  initialReps: number;
+  profile: { bodyWeightKg: number };
+  exerciseKey: string;
+  met: number;
+}) {
+  const updateExerciseSet = useAppStore((s) => s.updateExerciseSet);
+  const [weight, setWeight] = useState(initialWeight.toString());
+  const [reps, setReps] = useState(initialReps.toString());
+
+  const w = parseFloat(weight) || 0;
+  const r = parseInt(reps, 10) || 0;
+  const result = caloriesBurned(exerciseKey, 1, r, profile.bodyWeightKg, w, met);
+
+  return (
+    <View style={styles.setRow}>
+      <View style={styles.setRowHeader}>
+        <Text style={styles.setLabel}>Set {setIndex + 1}</Text>
+        <Badge variant="primary">{result.totalCal.toFixed(1)} kcal</Badge>
+      </View>
+
+      <View style={styles.inputsRow}>
+        <View style={styles.inputGroup}>
+          <Text style={[styles.inputLabel, w <= 0 && styles.inputLabelWarn]}>Weight (kg)</Text>
+          <TextInput
+            style={[styles.input, w <= 0 && styles.inputWarn]}
+            value={weight}
+            onChangeText={(val) => {
+              setWeight(val);
+              const parsed = parseFloat(val);
+              if (!isNaN(parsed) && parsed > 0) {
+                updateExerciseSet(exerciseIndex, setIndex, parsed, r);
+              }
+            }}
+            keyboardType="decimal-pad"
+            placeholder="e.g. 10"
+            placeholderTextColor={colors.textMuted}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={[styles.inputLabel, r <= 0 && styles.inputLabelWarn]}>Reps</Text>
+          <TextInput
+            style={[styles.input, r <= 0 && styles.inputWarn]}
+            value={reps}
+            onChangeText={(val) => {
+              setReps(val);
+              const parsed = parseInt(val, 10);
+              if (!isNaN(parsed) && parsed > 0) {
+                updateExerciseSet(exerciseIndex, setIndex, w, parsed);
+              }
+            }}
+            keyboardType="number-pad"
+            placeholder="e.g. 10"
+            placeholderTextColor={colors.textMuted}
+          />
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export default function WorkoutLoggerScreen({ navigation }: { navigation: any }) {
-  const { activeSession, profile, updateExerciseSet, removeExercise, getLiveCalories, findExercise, cancelSession } = useAppStore();
+  const { activeSession, profile, removeExercise, getLiveCalories, findExercise, cancelSession } = useAppStore();
   const live = getLiveCalories();
 
   return (
@@ -40,56 +105,22 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
                 </Button>
               </View>
 
-              {logged.sets.map((set, setIndex) => {
-                const result = caloriesBurned(logged.exerciseKey, 1, set.reps, profile.bodyWeightKg, set.weight, exercise.met);
-
-                return (
-                  <View key={setIndex} style={styles.setRow}>
-                    <View style={styles.setRowHeader}>
-                      <Text style={styles.setLabel}>Set {setIndex + 1}</Text>
-                      <Badge variant="primary">{result.totalCal.toFixed(1)} kcal</Badge>
-                    </View>
-
-                    <View style={styles.inputsRow}>
-                      <View style={styles.inputGroup}>
-                        <Text style={[styles.inputLabel, set.weight <= 0 && styles.inputLabelWarn]}>Weight (kg)</Text>
-                        <TextInput
-                          style={[styles.input, set.weight <= 0 && styles.inputWarn]}
-                          value={set.weight > 0 ? set.weight.toString() : ''}
-                          placeholder="e.g. 10"
-                          placeholderTextColor={colors.textMuted}
-                          onChangeText={(val) => {
-                            const w = parseFloat(val);
-                            if (isNaN(w) || w <= 0) return;
-                            updateExerciseSet(exerciseIndex, setIndex, w, set.reps);
-                          }}
-                          keyboardType="decimal-pad"
-                        />
-                      </View>
-
-                      <View style={styles.inputGroup}>
-                        <Text style={[styles.inputLabel, set.reps <= 0 && styles.inputLabelWarn]}>Reps</Text>
-                        <TextInput
-                          style={[styles.input, set.reps <= 0 && styles.inputWarn]}
-                          value={set.reps > 0 ? set.reps.toString() : ''}
-                          placeholder="e.g. 10"
-                          placeholderTextColor={colors.textMuted}
-                          onChangeText={(val) => {
-                            const r = parseInt(val, 10);
-                            if (isNaN(r) || r <= 0) return;
-                            updateExerciseSet(exerciseIndex, setIndex, set.weight, r);
-                          }}
-                          keyboardType="number-pad"
-                        />
-                      </View>
-                    </View>
-                  </View>
-                );
-              })}
+              {logged.sets.map((set, setIndex) => (
+                <SetInput
+                  key={`${exerciseIndex}-${setIndex}`}
+                  exerciseIndex={exerciseIndex}
+                  setIndex={setIndex}
+                  initialWeight={set.weight}
+                  initialReps={set.reps}
+                  profile={profile}
+                  exerciseKey={logged.exerciseKey}
+                  met={exercise.met}
+                />
+              ))}
 
               <Button variant="secondary" size="sm" fullWidth style={styles.addSetBtn} onPress={() => {
                 const lastSet = logged.sets[logged.sets.length - 1];
-                updateExerciseSet(exerciseIndex, logged.sets.length, lastSet.weight, lastSet.reps);
+                useAppStore.getState().updateExerciseSet(exerciseIndex, logged.sets.length, lastSet.weight, lastSet.reps);
               }}>
                 + Add Set
               </Button>
