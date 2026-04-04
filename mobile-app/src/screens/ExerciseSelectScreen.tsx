@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { WORKOUT_CATEGORIES, getExercisesForWorkout, searchExercises } from '../engine/exercises';
 import { useAppStore } from '../store/appStore';
 import { colors, spacing, radii, typography } from '../theme';
@@ -25,9 +26,7 @@ export default function ExerciseSelectScreen({ navigation }: { navigation: any }
           <TouchableOpacity onPress={() => setSelectedWorkout(null)} style={styles.backBtn}>
             <Text style={styles.backBtnText}>← Back</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>
-            {selectedCategory.icon} {selectedCategory.name}
-          </Text>
+          <Text style={styles.headerTitle}>{selectedCategory.name}</Text>
         </View>
 
         <FlatList
@@ -83,9 +82,9 @@ export default function ExerciseSelectScreen({ navigation }: { navigation: any }
             variant="elevated"
           >
             <View style={styles.workoutLeft}>
-              <View style={styles.workoutIconContainer}>
-                <Text style={styles.workoutIcon}>{cat.icon}</Text>
-              </View>
+            <View style={styles.workoutIconContainer}>
+              <MaterialCommunityIcons name={cat.icon as any} size={26} color={colors.primary} />
+            </View>
               <View>
                 <Text style={styles.workoutName}>{cat.name}</Text>
                 <Text style={styles.workoutCount}>{cat.exerciseKeys.length} exercises</Text>

@@ -10,6 +10,7 @@ export interface WorkoutCategory {
   key: string;
   name: string;
   icon: string;
+  iconLib: 'MaterialCommunityIcons' | 'Ionicons';
   exerciseKeys: string[];
 }
 
