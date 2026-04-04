@@ -5,7 +5,7 @@ import { EXERCISE_LIBRARY } from '../engine/exercises';
 import { caloriesBurned } from '../engine/calorieEngine';
 
 export default function WorkoutLoggerScreen({ navigation }: { navigation: any }) {
-  const { activeSession, profile, updateExerciseSet, removeExercise, getLiveCalories } = useAppStore();
+  const { activeSession, profile, updateExerciseSet, removeExercise, getLiveCalories, findExercise } = useAppStore();
   const live = getLiveCalories();
 
   return (
@@ -24,7 +24,7 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
 
       <ScrollView style={styles.exerciseList}>
         {activeSession.map((logged, exerciseIndex) => {
-          const exercise = EXERCISE_LIBRARY.find((e) => e.key === logged.exerciseKey);
+          const exercise = findExercise(logged.exerciseKey);
           if (!exercise || !profile) return null;
 
           return (

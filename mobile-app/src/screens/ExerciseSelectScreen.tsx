@@ -1,23 +1,31 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, SectionList } from 'react-native';
-import { EXERCISE_LIBRARY, MUSCLE_GROUPS } from '../engine/exercises';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, SectionList, ActivityIndicator } from 'react-native';
+import { getAllExercises, searchAllExercises, groupExercisesByMuscle, EXERCISE_LIBRARY } from '../engine/exercises';
 import { useAppStore } from '../store/appStore';
+import { Exercise } from '../types';
 
 export default function ExerciseSelectScreen({ navigation }: { navigation: any }) {
   const [search, setSearch] = useState('');
+  const [allExercises, setAllExercises] = useState<Exercise[]>(EXERCISE_LIBRARY);
+  const [loading, setLoading] = useState(true);
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
 
+  useEffect(() => {
+    getAllExercises()
+      .then((exercises) => {
+        setAllExercises(exercises);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
   const filtered = search.length > 0
-    ? EXERCISE_LIBRARY.filter(ex =>
-        ex.name.toLowerCase().includes(search.toLowerCase()) ||
-        ex.muscle.toLowerCase().includes(search.toLowerCase())
-      )
+    ? searchAllExercises(search, allExercises)
     : [];
 
-  const groupedData = MUSCLE_GROUPS.map(muscle => ({
-    title: muscle,
-    data: EXERCISE_LIBRARY.filter(ex => ex.muscle === muscle),
-  }));
+  const groupedData = Object.entries(groupExercisesByMuscle(allExercises))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([title, data]) => ({ title, data }));
 
   const handleSelect = (exerciseKey: string) => {
     useAppStore.getState().addExercise(exerciseKey);
@@ -67,6 +75,15 @@ export default function ExerciseSelectScreen({ navigation }: { navigation: any }
       }}
     />
   );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loadingText}>Loading exercises...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -119,4 +136,6 @@ const styles = StyleSheet.create({
   exerciseName: { fontSize: 16, color: '#fff', fontWeight: '600' },
   exerciseMeta: { fontSize: 13, color: '#888', marginTop: 2 },
   metBadge: { fontSize: 13, color: '#4CAF50', backgroundColor: '#1b3a1e', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+  loadingContainer: { flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' },
+  loadingText: { color: '#888', fontSize: 16, marginTop: 16 },
 });

@@ -2,13 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { WorkoutSession } from '../types';
 import { EXERCISE_LIBRARY } from '../engine/exercises';
+import { useAppStore } from '../store/appStore';
 
 export default function SummaryScreen({ route, navigation }: { route: any; navigation: any }) {
   const session: WorkoutSession = route.params.session;
+  const findExercise = useAppStore((state) => state.findExercise);
 
   const muscleGroups = new Set<string>();
   for (const logged of session.exercises) {
-    const ex = EXERCISE_LIBRARY.find((e) => e.key === logged.exerciseKey);
+    const ex = findExercise(logged.exerciseKey);
     if (ex) muscleGroups.add(ex.muscle);
   }
 
@@ -42,7 +44,7 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
 
       <Text style={styles.sectionTitle}>Exercises</Text>
       {session.exercises.map((logged, index) => {
-        const exercise = EXERCISE_LIBRARY.find((e) => e.key === logged.exerciseKey);
+        const exercise = findExercise(logged.exerciseKey);
         if (!exercise) return null;
 
         const totalReps = logged.sets.reduce((sum, s) => sum + s.reps, 0);

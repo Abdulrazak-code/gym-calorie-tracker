@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserProfile, LoggedExercise, WorkoutSession, SetEntry } from '../types';
+import { UserProfile, LoggedExercise, WorkoutSession, SetEntry, Exercise } from '../types';
 import { caloriesBurned } from '../engine/calorieEngine';
-import { EXERCISE_LIBRARY } from '../engine/exercises';
+import { EXERCISE_LIBRARY, getAllExercises } from '../engine/exercises';
 
 const PROFILE_KEY = 'user_profile';
 const SESSIONS_KEY = 'workout_sessions';
@@ -27,6 +27,7 @@ interface AppState {
   deleteSession: (id: string) => Promise<void>;
 
   getLiveCalories: () => { activeCal: number; epocCal: number; totalCal: number; durationSec: number };
+  findExercise: (key: string) => Exercise | undefined;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -86,7 +87,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     let totalDurationSec = 0;
 
     for (const logged of activeSession) {
-      const exercise = EXERCISE_LIBRARY.find((e) => e.key === logged.exerciseKey);
+      const exercise = get().findExercise(logged.exerciseKey);
       if (!exercise) continue;
 
       const totalSets = logged.sets.length;
@@ -148,7 +149,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   getLiveCalories: () => {
-    const { activeSession, profile } = get();
+    const { activeSession, profile, findExercise } = get();
     if (!profile || activeSession.length === 0) {
       return { activeCal: 0, epocCal: 0, totalCal: 0, durationSec: 0 };
     }
@@ -157,7 +158,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     let totalDurationSec = 0;
 
     for (const logged of activeSession) {
-      const exercise = EXERCISE_LIBRARY.find((e) => e.key === logged.exerciseKey);
+      const exercise = findExercise(logged.exerciseKey);
       if (!exercise) continue;
 
       for (const set of logged.sets) {
@@ -184,5 +185,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       totalCal: Math.round((totalActiveCal + epocCal) * 100) / 100,
       durationSec: totalDurationSec,
     };
+  },
+
+  findExercise: (key: string) => {
+    return EXERCISE_LIBRARY.find((e) => e.key === key);
   },
 }));

@@ -1,4 +1,5 @@
 import { Exercise } from '../types';
+import { getExercises, mapWgerToAppExercise } from '../api/wger';
 
 export const EXERCISE_LIBRARY: Exercise[] = [
   { key: 'bicep_curl', name: 'Bicep Curl', met: 3.5, muscle: 'Biceps', equipment: 'Dumbbell' },
@@ -23,7 +24,7 @@ export const EXERCISE_LIBRARY: Exercise[] = [
   { key: 'kettlebell_swings', name: 'Kettlebell Swings', met: 9.8, muscle: 'Full Body', equipment: 'Kettlebell' },
 ];
 
-export const MUSCLE_GROUPS = ['Biceps', 'Shoulders', 'Back', 'Chest', 'Triceps', 'Legs', 'Legs/Back', 'Full Body'];
+export const MUSCLE_GROUPS = ['Biceps', 'Shoulders', 'Back', 'Chest', 'Triceps', 'Legs', 'Legs/Back', 'Full Body', 'Core', 'Other'];
 
 export function getExercisesByMuscle(muscle: string): Exercise[] {
   return EXERCISE_LIBRARY.filter(ex => ex.muscle === muscle);
@@ -34,4 +35,39 @@ export function searchExercises(query: string): Exercise[] {
   return EXERCISE_LIBRARY.filter(ex =>
     ex.name.toLowerCase().includes(q) || ex.muscle.toLowerCase().includes(q)
   );
+}
+
+let _allExercises: Exercise[] | null = null;
+
+export async function getAllExercises(): Promise<Exercise[]> {
+  if (_allExercises) return _allExercises;
+
+  const wgerExercises = await getExercises();
+  const wgerMapped = wgerExercises.map(mapWgerToAppExercise);
+
+  const combined = [...EXERCISE_LIBRARY, ...wgerMapped];
+  const seen = new Set<string>();
+  _allExercises = combined.filter(ex => {
+    if (seen.has(ex.key)) return false;
+    seen.add(ex.key);
+    return true;
+  });
+
+  return _allExercises;
+}
+
+export function searchAllExercises(query: string, allExercises: Exercise[]): Exercise[] {
+  const q = query.toLowerCase();
+  return allExercises.filter(ex =>
+    ex.name.toLowerCase().includes(q) || ex.muscle.toLowerCase().includes(q)
+  );
+}
+
+export function groupExercisesByMuscle(allExercises: Exercise[]): Record<string, Exercise[]> {
+  const groups: Record<string, Exercise[]> = {};
+  for (const ex of allExercises) {
+    if (!groups[ex.muscle]) groups[ex.muscle] = [];
+    groups[ex.muscle].push(ex);
+  }
+  return groups;
 }
