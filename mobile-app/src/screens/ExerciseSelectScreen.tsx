@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { WORKOUT_CATEGORIES, getExercisesForWorkout, searchExercises } from '../engine/exercises';
 import { useAppStore } from '../store/appStore';
 import { colors, spacing, radii, typography } from '../theme';
 import { Card, Badge } from '../components/ui';
+import HumanBody from '../components/illustrations/HumanBody';
 
 export default function ExerciseSelectScreen({ navigation }: { navigation: any }) {
   const [search, setSearch] = useState('');
@@ -83,7 +83,7 @@ export default function ExerciseSelectScreen({ navigation }: { navigation: any }
           >
             <View style={styles.workoutLeft}>
             <View style={styles.workoutIconContainer}>
-              <MaterialCommunityIcons name={cat.icon as any} size={26} color={colors.primary} />
+              <HumanBody muscleGroup={cat.key} size={56} />
             </View>
               <View>
                 <Text style={styles.workoutName}>{cat.name}</Text>
@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
   },
   workoutLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
   workoutIconContainer: {
-    width: 48,
-    height: 48,
+    width: 64,
+    height: 64,
     borderRadius: radii.md,
     backgroundColor: colors.primaryMuted,
     alignItems: 'center',
