@@ -6,6 +6,13 @@ export interface Exercise {
   equipment: string;
 }
 
+export interface WorkoutCategory {
+  key: string;
+  name: string;
+  icon: string;
+  exerciseKeys: string[];
+}
+
 export interface UserProfile {
   bodyWeightKg: number;
   age: number;
