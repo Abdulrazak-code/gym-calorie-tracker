@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, ScrollView, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useAppStore } from '../store/appStore';
 import { EXERCISE_LIBRARY } from '../engine/exercises';
 import { caloriesBurned } from '../engine/calorieEngine';
@@ -65,6 +66,7 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
                           const w = parseFloat(val);
                           if (isNaN(w) || w < 0) return;
                           updateExerciseSet(exerciseIndex, setIndex, w, set.reps);
+                          Haptics.selectionAsync();
                         }}
                         keyboardType="decimal-pad"
                       />
@@ -79,6 +81,7 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
                           const r = parseInt(val, 10);
                           if (isNaN(r) || r < 0) return;
                           updateExerciseSet(exerciseIndex, setIndex, set.weight, r);
+                          Haptics.selectionAsync();
                         }}
                         keyboardType="number-pad"
                       />

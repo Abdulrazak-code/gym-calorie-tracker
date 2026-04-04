@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import OnboardingScreen from './src/screens/OnboardingScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import ExerciseSelectScreen from './src/screens/ExerciseSelectScreen';
@@ -14,6 +16,16 @@ import HistoryScreen from './src/screens/HistoryScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem('user_profile').then((data) => {
+      setHasProfile(!!data);
+    });
+  }, []);
+
+  if (hasProfile === null) return null;
+
   return (
     <SafeAreaProvider>
       <StatusBar style="light" />
@@ -24,7 +36,13 @@ export default function App() {
             headerTintColor: '#fff',
             contentStyle: { backgroundColor: '#121212' },
           }}
+          initialRouteName={hasProfile ? 'Home' : 'Onboarding'}
         >
+          <Stack.Screen
+            name="Onboarding"
+            component={OnboardingScreen}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="Home"
             component={HomeScreen}

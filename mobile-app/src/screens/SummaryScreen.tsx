@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Share } from 'react-native';
 import { WorkoutSession } from '../types';
 import { EXERCISE_LIBRARY } from '../engine/exercises';
 import { useAppStore } from '../store/appStore';
@@ -13,6 +13,35 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
     const ex = findExercise(logged.exerciseKey);
     if (ex) muscleGroups.add(ex.muscle);
   }
+
+  const handleShare = async () => {
+    const exerciseLines = session.exercises.map((logged) => {
+      const ex = findExercise(logged.exerciseKey);
+      const totalReps = logged.sets.reduce((sum, s) => sum + s.reps, 0);
+      const totalSets = logged.sets.length;
+      return `  • ${ex?.name || logged.exerciseKey}: ${totalSets} sets x ${Math.round(totalReps / totalSets)} avg reps`;
+    }).join('\n');
+
+    const text = `🏋️ Workout Summary
+📅 ${new Date(session.date).toLocaleDateString()}
+
+🔥 Total Calories: ${session.totalCalories.toFixed(1)} kcal
+  Active: ${session.activeCalories.toFixed(1)} | EPOC: ${session.epocCalories.toFixed(1)}
+⏱️ Duration: ${Math.floor(session.durationSec / 60)}m ${session.durationSec % 60}s
+
+Exercises:
+${exerciseLines}
+
+Muscle Groups: ${Array.from(muscleGroups).join(', ')}
+
+— Gym Calorie Tracker`;
+
+    try {
+      await Share.share({ message: text });
+    } catch {
+      // User cancelled
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -79,6 +108,12 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
         >
           <Text style={styles.actionBtnText}>Back to Home</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.shareBtn}
+          onPress={handleShare}
+        >
+          <Text style={styles.shareBtnText}>Share Workout</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -125,7 +160,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   muscleTagText: { color: '#4CAF50', fontSize: 14, fontWeight: '600' },
-  actions: { marginTop: 16 },
+  actions: { marginTop: 16, gap: 12 },
   actionBtn: {
     backgroundColor: '#4CAF50',
     borderRadius: 12,
@@ -133,4 +168,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actionBtnText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  shareBtn: {
+    backgroundColor: '#1e1e1e',
+    borderRadius: 12,
+    padding: 18,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  shareBtnText: { color: '#4CAF50', fontSize: 18, fontWeight: 'bold' },
 });
