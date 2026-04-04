@@ -1,6 +1,23 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { useAppStore } from '../store/appStore';
+
+function getThisWeekStats(sessions: any[]) {
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay());
+  weekStart.setHours(0, 0, 0, 0);
+
+  const weekSessions = sessions.filter((s) => new Date(s.date) >= weekStart);
+  const totalCal = weekSessions.reduce((sum, s) => sum + s.totalCalories, 0);
+  const totalDuration = weekSessions.reduce((sum, s) => sum + s.durationSec, 0);
+
+  return {
+    totalCal: Math.round(totalCal * 10) / 10,
+    totalWorkouts: weekSessions.length,
+    totalMinutes: Math.round(totalDuration / 60),
+  };
+}
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
   const { profile, sessions, loadProfile, loadSessions } = useAppStore();
@@ -19,8 +36,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
     navigation.navigate('ExerciseSelect');
   };
 
+  const weekStats = getThisWeekStats(sessions);
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Gym Calorie Tracker</Text>
         {profile && (
@@ -34,6 +53,28 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         <Text style={styles.startBtnText}>Start Workout</Text>
       </TouchableOpacity>
 
+      {sessions.length > 0 && (
+        <View style={styles.weekCard}>
+          <Text style={styles.weekLabel}>This Week</Text>
+          <View style={styles.weekStats}>
+            <View style={styles.weekStat}>
+              <Text style={styles.weekStatValue}>{weekStats.totalCal}</Text>
+              <Text style={styles.weekStatLabel}>kcal</Text>
+            </View>
+            <View style={styles.weekDivider} />
+            <View style={styles.weekStat}>
+              <Text style={styles.weekStatValue}>{weekStats.totalWorkouts}</Text>
+              <Text style={styles.weekStatLabel}>workouts</Text>
+            </View>
+            <View style={styles.weekDivider} />
+            <View style={styles.weekStat}>
+              <Text style={styles.weekStatValue}>{weekStats.totalMinutes}</Text>
+              <Text style={styles.weekStatLabel}>minutes</Text>
+            </View>
+          </View>
+        </View>
+      )}
+
       <Text style={styles.sectionTitle}>Recent Workouts</Text>
       {sessions.length === 0 ? (
         <Text style={styles.emptyText}>No workouts yet. Start your first one!</Text>
@@ -41,6 +82,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         <FlatList
           data={sessions.slice(0, 3)}
           keyExtractor={(item) => item.id}
+          scrollEnabled={false}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.sessionCard}
@@ -66,7 +108,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
       >
         <Text style={styles.profileBtnText}>Edit Profile</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -78,6 +120,13 @@ const styles = StyleSheet.create({
   profileText: { color: '#4CAF50', fontSize: 14, fontWeight: 'bold' },
   startBtn: { backgroundColor: '#4CAF50', borderRadius: 16, padding: 20, alignItems: 'center', marginBottom: 32 },
   startBtnText: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
+  weekCard: { backgroundColor: '#1e1e1e', borderRadius: 12, padding: 16, marginBottom: 24 },
+  weekLabel: { color: '#888', fontSize: 14, marginBottom: 12, textAlign: 'center' },
+  weekStats: { flexDirection: 'row', justifyContent: 'space-around' },
+  weekStat: { alignItems: 'center' },
+  weekStatValue: { color: '#4CAF50', fontSize: 28, fontWeight: 'bold' },
+  weekStatLabel: { color: '#888', fontSize: 12, marginTop: 2 },
+  weekDivider: { width: 1, backgroundColor: '#333' },
   sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff', marginBottom: 16 },
   emptyText: { color: '#666', fontSize: 16, textAlign: 'center', marginTop: 40 },
   sessionCard: { backgroundColor: '#1e1e1e', borderRadius: 12, padding: 16, marginBottom: 12 },
