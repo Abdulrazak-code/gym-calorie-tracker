@@ -15,6 +15,7 @@ export interface WorkoutCategory {
 }
 
 export interface UserProfile {
+  nickname: string;
   bodyWeightKg: number;
   age: number;
   gender: 'male' | 'female' | 'other';
@@ -24,6 +25,8 @@ export interface UserProfile {
 export interface SetEntry {
   reps: number;
   weight: number;
+  completed: boolean;
+  setType: 'warmup' | 'working' | 'drop' | 'failure';
 }
 
 export interface LoggedExercise {

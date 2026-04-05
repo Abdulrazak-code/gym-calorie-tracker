@@ -9,21 +9,23 @@ import {
   TextStyle,
   TextInputProps,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing, radii, typography, shadows } from '../theme';
 
 interface CardProps {
   children: React.ReactNode;
   style?: ViewStyle;
   onPress?: () => void;
-  variant?: 'default' | 'elevated' | 'primary' | 'glass';
+  variant?: 'default' | 'elevated' | 'primary' | 'glass' | 'bordered';
 }
 
 export function Card({ children, style, onPress, variant = 'default' }: CardProps) {
   const variantStyles: Record<string, ViewStyle> = {
     default: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
     elevated: { backgroundColor: colors.surfaceElevated, ...shadows.md },
-    primary: { backgroundColor: colors.primaryMuted, borderWidth: 1, borderColor: 'rgba(34, 197, 94, 0.2)' },
-    glass: { backgroundColor: 'rgba(28, 28, 31, 0.8)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)' },
+    primary: { backgroundColor: colors.primaryMuted, borderWidth: 1, borderColor: 'rgba(16, 185, 129, 0.2)' },
+    glass: { backgroundColor: 'rgba(22, 22, 26, 0.7)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.04)' },
+    bordered: { backgroundColor: colors.transparent, borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed' as const },
   };
 
   if (onPress) {
@@ -49,8 +51,12 @@ interface ButtonProps {
 }
 
 export function Button({ children, onPress, variant = 'primary', size = 'md', fullWidth, disabled, style, textStyle }: ButtonProps) {
+  const gradientColors = variant === 'primary'
+    ? [colors.primary, colors.primaryDark] as [string, string]
+    : undefined;
+
   const variantStyles: Record<string, ViewStyle> = {
-    primary: { backgroundColor: colors.primary },
+    primary: { backgroundColor: colors.transparent },
     secondary: { backgroundColor: colors.surfaceElevated, borderWidth: 1, borderColor: colors.border },
     ghost: { backgroundColor: colors.transparent },
     danger: { backgroundColor: colors.dangerMuted },
@@ -72,8 +78,12 @@ export function Button({ children, onPress, variant = 'primary', size = 'md', fu
   const sizeTextStyles: Record<string, TextStyle> = {
     sm: { ...typography.buttonSm },
     md: { ...typography.button },
-    lg: { ...typography.button, fontSize: 18 },
+    lg: { ...typography.button, fontSize: 17 },
   };
+
+  const buttonContent = (
+    <Text style={[sizeTextStyles[size], variantTextStyles[variant], textStyle, disabled && { opacity: 0.5 }]}>{children}</Text>
+  );
 
   return (
     <TouchableOpacity
@@ -89,7 +99,18 @@ export function Button({ children, onPress, variant = 'primary', size = 'md', fu
       disabled={disabled}
       activeOpacity={0.8}
     >
-      <Text style={[sizeTextStyles[size], variantTextStyles[variant], textStyle]}>{children}</Text>
+      {gradientColors && !disabled ? (
+        <LinearGradient
+          colors={gradientColors}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.gradientFill}
+        >
+          {buttonContent}
+        </LinearGradient>
+      ) : (
+        buttonContent
+      )}
     </TouchableOpacity>
   );
 }
@@ -115,7 +136,7 @@ export function Input({ label, error, style, ...props }: InputProps) {
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'danger' | 'warning';
+  variant?: 'default' | 'primary' | 'danger' | 'warning' | 'accent';
   style?: ViewStyle;
 }
 
@@ -125,6 +146,7 @@ export function Badge({ children, variant = 'default', style }: BadgeProps) {
     primary: { backgroundColor: colors.primaryMuted },
     danger: { backgroundColor: colors.dangerMuted },
     warning: { backgroundColor: colors.warningMuted },
+    accent: { backgroundColor: colors.accentMuted },
   };
 
   const variantTextStyles: Record<string, TextStyle> = {
@@ -132,6 +154,7 @@ export function Badge({ children, variant = 'default', style }: BadgeProps) {
     primary: { color: colors.primary },
     danger: { color: colors.danger },
     warning: { color: colors.warning },
+    accent: { color: colors.accent },
   };
 
   return (
@@ -159,9 +182,10 @@ export function StatCard({ label, value, icon }: StatCardProps) {
 
 const styles = StyleSheet.create({
   card: { borderRadius: radii.lg, padding: spacing.lg },
-  button: { alignItems: 'center', justifyContent: 'center' },
+  button: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden' as const },
   buttonFull: { width: '100%' },
   buttonDisabled: { opacity: 0.5 },
+  gradientFill: { alignItems: 'center', justifyContent: 'center', width: '100%', paddingVertical: spacing.lg, paddingHorizontal: spacing['2xl'], borderRadius: radii.lg },
   inputContainer: { marginBottom: spacing.lg },
   inputLabel: { ...typography.label, color: colors.textSecondary, marginBottom: spacing.sm },
   input: {
@@ -175,10 +199,10 @@ const styles = StyleSheet.create({
   },
   inputError: { borderColor: colors.danger },
   inputErrorText: { ...typography.caption, color: colors.danger, marginTop: spacing.xs },
-  badge: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radii.full, alignSelf: 'flex-start' },
-  badgeText: { ...typography.caption },
-  statCard: { alignItems: 'center', padding: spacing.xl, minWidth: 100 },
-  statIcon: { fontSize: 20, marginBottom: spacing.xs },
+  badge: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: radii.full, alignSelf: 'flex-start' },
+  badgeText: { ...typography.caption, fontWeight: '600' as const },
+  statCard: { alignItems: 'center', padding: spacing.xl, minWidth: 100, flex: 1 },
+  statIcon: { fontSize: 24, marginBottom: spacing.sm },
   statValue: { ...typography.h3, color: colors.primary, textAlign: 'center' },
   statLabel: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs, textAlign: 'center' },
 });

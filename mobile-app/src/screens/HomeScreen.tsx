@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Circle } from 'react-native-svg';
 import { useAppStore } from '../store/appStore';
 import { colors, spacing, radii, typography } from '../theme';
 import { Card, Button, StatCard } from '../components/ui';
@@ -19,6 +21,38 @@ function getThisWeekStats(sessions: any[]) {
     totalWorkouts: weekSessions.length,
     totalMinutes: Math.round(totalDuration / 60),
   };
+}
+
+function ProgressRing({ done, goal = 5 }: { done: number; goal?: number }) {
+  const size = 80;
+  const strokeWidth = 8;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const progress = Math.min(done / goal, 1);
+  const strokeDashoffset = circumference * (1 - progress);
+
+  return (
+    <View style={{ alignItems: 'center', justifyContent: 'center', width: size, height: size }}>
+      <Svg width={size} height={size} style={{ transform: [{ rotate: '-90deg' }] }}>
+        <Circle cx={size / 2} cy={size / 2} r={radius} stroke="#27272a" strokeWidth={strokeWidth} fill="none" />
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="#10b981"
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeDasharray={`${circumference} ${circumference}`}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+        />
+      </Svg>
+      <View style={{ position: 'absolute', alignItems: 'center' }}>
+        <Text style={{ fontSize: 18, fontWeight: '800', color: '#fafafa' }}>{done}</Text>
+        <Text style={{ fontSize: 10, color: '#6b7280' }}>/{goal}</Text>
+      </View>
+    </View>
+  );
 }
 
 export default function HomeScreen({ navigation }: { navigation: any }) {
@@ -43,28 +77,45 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>Welcome back</Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.greeting}>Welcome back{profile?.nickname ? `, ${profile.nickname}` : ''} 👋</Text>
           <Text style={styles.title}>Gym Calorie Tracker</Text>
         </View>
         {profile && (
           <TouchableOpacity style={styles.profileBadge} onPress={() => navigation.navigate('Profile')}>
-            <Text style={styles.profileText}>{profile.bodyWeightKg} kg</Text>
+            <View style={styles.profileDot} />
+            <Text style={styles.profileText}>{profile.nickname || profile.bodyWeightKg + ' kg'}</Text>
           </TouchableOpacity>
         )}
       </View>
 
-      <Button variant="primary" size="lg" fullWidth onPress={handleStartWorkout} style={styles.startBtn}>
-        Start Workout
-      </Button>
+      <LinearGradient
+        colors={[colors.primary, colors.primaryDark]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.heroCard}
+      >
+        <View style={styles.heroContent}>
+          <View>
+            <Text style={styles.heroLabel}>Ready to train?</Text>
+            <Text style={styles.heroTitle}>Start your workout</Text>
+          </View>
+          <TouchableOpacity style={styles.heroButton} onPress={handleStartWorkout} activeOpacity={0.85}>
+            <Text style={styles.heroButtonText}>Begin</Text>
+            <Text style={styles.heroButtonArrow}>→</Text>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
 
       {sessions.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>This Week</Text>
-          <View style={styles.statsRow}>
-            <StatCard label="Calories" value={`${weekStats.totalCal}`} icon="🔥" />
-            <StatCard label="Workouts" value={`${weekStats.totalWorkouts}`} icon="💪" />
-            <StatCard label="Minutes" value={`${weekStats.totalMinutes}`} icon="⏱️" />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+            <ProgressRing done={weekStats.totalWorkouts} />
+            <View style={{ flex: 1, gap: 8 }}>
+              <StatCard label="Calories" value={`${weekStats.totalCal}`} icon="🔥" />
+              <StatCard label="Minutes" value={`${weekStats.totalMinutes}`} icon="⏱️" />
+            </View>
           </View>
         </View>
       )}
@@ -93,16 +144,23 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               onPress={() => navigation.navigate('Summary', { session: item })}
             >
               <View style={styles.sessionRow}>
-                <View>
-                  <Text style={styles.sessionDate}>
-                    {new Date(item.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
-                  </Text>
-                  <Text style={styles.sessionCalories}>{item.totalCalories.toFixed(1)} kcal</Text>
-                  <Text style={styles.sessionMeta}>
-                    {item.exercises.length} exercises • {Math.floor(item.durationSec / 60)}m {item.durationSec % 60}s
-                  </Text>
+                <View style={styles.sessionLeft}>
+                  <View style={styles.sessionIcon}>
+                    <Text style={styles.sessionIconText}>🏋️</Text>
+                  </View>
+                  <View style={styles.sessionInfo}>
+                    <Text style={styles.sessionDate}>
+                      {new Date(item.date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                    </Text>
+                    <Text style={styles.sessionCalories}>{item.totalCalories.toFixed(1)} kcal</Text>
+                    <Text style={styles.sessionMeta}>
+                      {item.exercises.length} exercises • {Math.floor(item.durationSec / 60)}m
+                    </Text>
+                  </View>
                 </View>
-                <Text style={styles.sessionArrow}>→</Text>
+                <View style={styles.sessionArrow}>
+                  <Text style={styles.sessionArrowText}>→</Text>
+                </View>
               </View>
             </Card>
           ))
@@ -116,11 +174,19 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing['2xl'] },
-  greeting: { ...typography.body, color: colors.textMuted, marginBottom: spacing.xs },
+  headerLeft: { flex: 1 },
+  greeting: { ...typography.label, color: colors.textMuted, marginBottom: spacing.xs },
   title: { ...typography.h2, color: colors.text },
-  profileBadge: { backgroundColor: colors.surface, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radii.full, borderWidth: 1, borderColor: colors.border },
-  profileText: { color: colors.primary, ...typography.label },
-  startBtn: { marginBottom: spacing['2xl'] },
+  profileBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, borderRadius: radii.full, borderWidth: 1, borderColor: colors.border, gap: spacing.xs },
+  profileDot: { width: 8, height: 8, borderRadius: radii.full, backgroundColor: colors.primary },
+  profileText: { color: colors.textSecondary, ...typography.label },
+  heroCard: { borderRadius: radii.xl, marginBottom: spacing['2xl'], overflow: 'hidden' as const },
+  heroContent: { padding: spacing['2xl'], flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  heroLabel: { fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: spacing.xs, fontWeight: '500' },
+  heroTitle: { fontSize: 22, color: colors.white, fontWeight: '800', letterSpacing: -0.5 },
+  heroButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: spacing.xl, paddingVertical: spacing.md, borderRadius: radii.full },
+  heroButtonText: { color: colors.white, ...typography.button },
+  heroButtonArrow: { color: colors.white, fontSize: 18, marginLeft: spacing.xs },
   section: { marginBottom: spacing['2xl'] },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
   sectionTitle: { ...typography.h3, color: colors.text, marginBottom: spacing.lg },
@@ -132,8 +198,13 @@ const styles = StyleSheet.create({
   emptySubtext: { ...typography.bodySm, color: colors.textMuted },
   sessionCard: { marginBottom: spacing.md },
   sessionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  sessionLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  sessionIcon: { width: 44, height: 44, borderRadius: radii.md, backgroundColor: colors.primaryMuted, alignItems: 'center', justifyContent: 'center' },
+  sessionIconText: { fontSize: 20 },
+  sessionInfo: { flex: 1 },
   sessionDate: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs },
-  sessionCalories: { ...typography.h2, color: colors.primary, marginBottom: spacing.xs },
+  sessionCalories: { ...typography.h4, color: colors.primary, marginBottom: spacing.xs },
   sessionMeta: { ...typography.bodySm, color: colors.textSecondary },
-  sessionArrow: { fontSize: 20, color: colors.textMuted },
+  sessionArrow: { width: 32, height: 32, borderRadius: radii.full, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+  sessionArrowText: { fontSize: 16, color: colors.textMuted },
 });

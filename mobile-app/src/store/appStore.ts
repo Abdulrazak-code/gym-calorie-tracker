@@ -21,14 +21,17 @@ interface AppState {
   addExercise: (exerciseKey: string) => void;
   updateExerciseSet: (exerciseIndex: number, setIndex: number, weight: number, reps: number) => void;
   removeExercise: (index: number) => void;
+  removeExerciseSet: (exerciseIndex: number, setIndex: number) => void;
   finishSession: () => WorkoutSession | null;
   cancelSession: () => void;
 
   loadSessions: () => Promise<void>;
   deleteSession: (id: string) => Promise<void>;
+  restoreSession: (session: WorkoutSession) => void;
 
   getLiveCalories: () => { activeCal: number; epocCal: number; totalCal: number; durationSec: number };
   findExercise: (key: string) => Exercise | undefined;
+  getLastSessionExercise: (exerciseKey: string) => { weight: number; reps: number; sets: number; date: string } | null;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -57,7 +60,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   addExercise: (exerciseKey) => {
     const newExercise: LoggedExercise = {
       exerciseKey,
-      sets: [{ reps: 10, weight: 10 }],
+      sets: [{ reps: 10, weight: 10, completed: false, setType: 'working' }],
       restTimeSec: 75,
     };
     set((state) => ({ activeSession: [...state.activeSession, newExercise] }));
@@ -68,7 +71,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       const updated = [...state.activeSession];
       const exercise = { ...updated[exerciseIndex] };
       const sets = [...exercise.sets];
-      sets[setIndex] = { reps, weight };
+      sets[setIndex] = { ...sets[setIndex], reps, weight };
       exercise.sets = sets;
       updated[exerciseIndex] = exercise;
       return { activeSession: updated };
@@ -79,6 +82,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((state) => ({
       activeSession: state.activeSession.filter((_, i) => i !== index),
     }));
+  },
+
+  removeExerciseSet: (exerciseIndex, setIndex) => {
+    set((state) => {
+      const updated = [...state.activeSession];
+      const exercise = { ...updated[exerciseIndex] };
+      if (exercise.sets.length <= 1) return state;
+      exercise.sets = exercise.sets.filter((_, i) => i !== setIndex);
+      updated[exerciseIndex] = exercise;
+      return { activeSession: updated };
+    });
   },
 
   finishSession: () => {
@@ -150,6 +164,18 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
 
+  restoreSession: (session) => {
+    set((state) => {
+      const newSessions = state.sessions.filter((s) => s.id !== session.id);
+      AsyncStorage.setItem(SESSIONS_KEY, JSON.stringify(newSessions));
+      return {
+        activeSession: session.exercises,
+        isSessionActive: true,
+        sessions: newSessions,
+      };
+    });
+  },
+
   getLiveCalories: () => {
     const { activeSession, profile, findExercise } = get();
     if (!profile || activeSession.length === 0) {
@@ -192,5 +218,23 @@ export const useAppStore = create<AppState>((set, get) => ({
   // FIX: searches allExercises (local + WGER) instead of only local EXERCISE_LIBRARY
   findExercise: (key: string) => {
     return get().allExercises.find((e) => e.key === key);
+  },
+
+  getLastSessionExercise: (exerciseKey: string) => {
+    const { sessions } = get();
+    for (const session of sessions) {
+      for (const logged of session.exercises) {
+        if (logged.exerciseKey === exerciseKey) {
+          const bestSet = logged.sets.reduce((best, s) => (s.weight > best.weight ? s : best), logged.sets[0]);
+          return {
+            weight: bestSet.weight,
+            reps: bestSet.reps,
+            sets: logged.sets.length,
+            date: session.date,
+          };
+        }
+      }
+    }
+    return null;
   },
 }));

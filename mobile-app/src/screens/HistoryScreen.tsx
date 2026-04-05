@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, Alert, ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAppStore } from '../store/appStore';
 import { colors, spacing, radii, typography } from '../theme';
 import { Card, Button, Badge } from '../components/ui';
@@ -48,7 +49,11 @@ export default function HistoryScreen({ navigation }: { navigation: any }) {
 
       {sessions.length > 0 && (
         <>
-          <Card variant="primary" style={styles.weeklySummary}>
+          <LinearGradient
+            colors={[colors.primaryMutedStrong, colors.transparent]}
+            style={styles.weeklyGradient}
+          />
+          <Card variant="glass" style={styles.weeklySummary}>
             <Text style={styles.weeklyLabel}>This Week</Text>
             <Text style={styles.weeklyValue}>{totalThisWeek.toFixed(1)} kcal</Text>
           </Card>
@@ -58,11 +63,17 @@ export default function HistoryScreen({ navigation }: { navigation: any }) {
             <View style={styles.barsContainer}>
               {weeklyData.map((week, i) => {
                 const barHeight = week.total > 0 ? Math.max((week.total / maxWeekly) * 100, 4) : 0;
+                const isCurrentWeek = i === weeklyData.length - 1;
                 return (
                   <View key={i} style={styles.barWrapper}>
-                    <Text style={styles.barValue}>{week.total > 0 ? week.total.toFixed(0) : ''}</Text>
-                    <View style={[styles.bar, { height: barHeight, backgroundColor: week.total > 0 ? colors.primary : colors.border, opacity: week.total > 0 ? 1 : 0.3 }]} />
-                    <Text style={styles.barLabel}>{week.label}</Text>
+                    <Text style={[styles.barValue, week.total > 0 && { color: colors.primary }]}>{week.total > 0 ? week.total.toFixed(0) : ''}</Text>
+                    <LinearGradient
+                      colors={isCurrentWeek ? [colors.primary, colors.primaryDark] : week.total > 0 ? [colors.primaryMutedStrong, colors.primaryMuted] : [colors.border, colors.border]}
+                      style={[styles.bar, { height: barHeight }]}
+                      start={{ x: 0, y: 1 }}
+                      end={{ x: 0, y: 0 }}
+                    />
+                    <Text style={[styles.barLabel, isCurrentWeek && { color: colors.primary }]}>{week.label}</Text>
                   </View>
                 );
               })}
@@ -78,32 +89,42 @@ export default function HistoryScreen({ navigation }: { navigation: any }) {
           <Text style={styles.emptySubtext}>Complete a workout to see your history</Text>
         </Card>
       ) : (
-        <FlatList
-          data={sessions}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={false}
-          renderItem={({ item }) => (
-            <Card
-              variant="elevated"
-              style={styles.sessionCard}
-              onPress={() => navigation.navigate('Summary', { session: item })}
-            >
-              <View style={styles.sessionInfo}>
-                <Text style={styles.sessionDate}>
-                  {new Date(item.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
-                </Text>
-                <Text style={styles.sessionCalories}>{item.totalCalories.toFixed(1)} kcal</Text>
-                <View style={styles.sessionMetaRow}>
-                  <Badge variant="default">{item.exercises.length} exercises</Badge>
-                  <Badge variant="default">{Math.floor(item.durationSec / 60)}m {item.durationSec % 60}s</Badge>
+        <View style={styles.sessionsList}>
+          <Text style={styles.sectionTitle}>All Workouts</Text>
+          <FlatList
+            data={sessions}
+            keyExtractor={(item) => item.id}
+            scrollEnabled={false}
+            renderItem={({ item }) => (
+              <Card
+                variant="elevated"
+                style={styles.sessionCard}
+                onPress={() => navigation.navigate('Summary', { session: item })}
+              >
+                <View style={styles.sessionInfo}>
+                  <View style={styles.sessionHeader}>
+                    <View style={styles.sessionIcon}>
+                      <Text style={styles.sessionIconText}>🏋️</Text>
+                    </View>
+                    <View style={styles.sessionTexts}>
+                      <Text style={styles.sessionDate}>
+                        {new Date(item.date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                      </Text>
+                      <Text style={styles.sessionCalories}>{item.totalCalories.toFixed(1)} kcal</Text>
+                    </View>
+                  </View>
+                  <View style={styles.sessionMetaRow}>
+                    <Badge variant="default">{item.exercises.length} exercises</Badge>
+                    <Badge variant="default">{Math.floor(item.durationSec / 60)}m {item.durationSec % 60}s</Badge>
+                  </View>
                 </View>
-              </View>
-              <Button variant="ghost" size="sm" onPress={() => handleDelete(item.id)} textStyle={{ color: colors.danger }}>
-                Del
-              </Button>
-            </Card>
-          )}
-        />
+                <Button variant="ghost" size="sm" onPress={() => handleDelete(item.id)} textStyle={{ color: colors.danger }}>
+                  Del
+                </Button>
+              </Card>
+            )}
+          />
+        </View>
       )}
     </ScrollView>
   );
@@ -113,23 +134,30 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
   title: { ...typography.h1, color: colors.text, marginBottom: spacing['2xl'] },
-  weeklySummary: { alignItems: 'center', marginBottom: spacing.lg, padding: spacing.xl },
-  weeklyLabel: { ...typography.caption, color: colors.textSecondary, marginBottom: spacing.xs },
-  weeklyValue: { fontSize: 36, fontWeight: '800', color: colors.primary, letterSpacing: -1 },
+  weeklyGradient: { position: 'absolute', top: 80, left: 0, right: 0, height: 120 },
+  weeklySummary: { alignItems: 'center', marginBottom: spacing.lg, padding: spacing['2xl'] },
+  weeklyLabel: { ...typography.caption, color: colors.textSecondary, marginBottom: spacing.xs, textTransform: 'uppercase' as const, letterSpacing: 1 },
+  weeklyValue: { fontSize: 40, fontWeight: '900', color: colors.primary, letterSpacing: -1.5 },
   chartCard: { marginBottom: spacing['2xl'], padding: spacing.lg },
   chartTitle: { ...typography.h4, color: colors.text, textAlign: 'center', marginBottom: spacing.lg },
   barsContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 140, paddingHorizontal: spacing.sm },
   barWrapper: { alignItems: 'center', flex: 1 },
-  bar: { width: 28, borderRadius: radii.sm },
-  barValue: { ...typography.caption, color: colors.primary, marginBottom: spacing.xs },
-  barLabel: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+  bar: { width: 24, borderRadius: radii.sm },
+  barValue: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs },
+  barLabel: { ...typography.caption, color: colors.textMuted, marginTop: spacing.sm },
   emptyCard: { alignItems: 'center', padding: spacing['3xl'] },
   emptyEmoji: { fontSize: 48, marginBottom: spacing.lg },
   emptyText: { ...typography.h4, color: colors.text, marginBottom: spacing.sm },
   emptySubtext: { ...typography.bodySm, color: colors.textMuted },
-  sessionCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md, padding: spacing.lg },
+  sectionTitle: { ...typography.h3, color: colors.text, marginBottom: spacing.lg },
+  sessionsList: { marginTop: spacing.lg },
+  sessionCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.md, padding: spacing.lg },
   sessionInfo: { flex: 1 },
+  sessionHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.sm },
+  sessionIcon: { width: 40, height: 40, borderRadius: radii.md, backgroundColor: colors.primaryMuted, alignItems: 'center', justifyContent: 'center' },
+  sessionIconText: { fontSize: 18 },
+  sessionTexts: { flex: 1 },
   sessionDate: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs },
-  sessionCalories: { ...typography.h2, color: colors.primary, marginBottom: spacing.sm },
+  sessionCalories: { ...typography.h4, color: colors.primary },
   sessionMetaRow: { flexDirection: 'row', gap: spacing.sm },
 });
