@@ -353,7 +353,7 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
           onPress={() => {
             Alert.alert('Cancel Workout', 'Are you sure? All progress will be lost.', [
               { text: 'No, Keep Going', style: 'cancel' },
-              { text: 'Yes, Discard', style: 'destructive', onPress: () => { cancelSession(); navigation.navigate('Home'); } },
+              { text: 'Yes, Discard', style: 'destructive', onPress: () => { cancelSession(); navigation.navigate('MainTabs'); } },
             ]);
           }}
           activeOpacity={0.7}

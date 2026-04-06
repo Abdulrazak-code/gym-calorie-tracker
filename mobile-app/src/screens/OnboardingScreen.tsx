@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppStore } from '../store/appStore';
 import { colors, spacing, radii, typography } from '../theme';
@@ -33,7 +33,7 @@ export default function OnboardingScreen({ navigation }: { navigation: any }) {
     await useAppStore.getState().setProfile({
       nickname, bodyWeightKg: weightNum, age: ageNum, gender, heightCm,
     });
-    navigation.replace('Home');
+    navigation.replace('MainTabs');
   };
 
   const slide = slides[step];
@@ -67,7 +67,8 @@ export default function OnboardingScreen({ navigation }: { navigation: any }) {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
       <View style={styles.formHeader}>
         <Text style={styles.formTitle}>Set Up Your Profile</Text>
         <Text style={styles.formSubtitle}>We need a few details to calculate your calorie burn accurately</Text>
@@ -141,12 +142,14 @@ export default function OnboardingScreen({ navigation }: { navigation: any }) {
           Start Tracking
         </Button>
       </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, padding: spacing['2xl'], justifyContent: 'center' },
+  container: { flex: 1, backgroundColor: colors.background },
+  scrollContent: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
   glow: { position: 'absolute', top: -100, left: -100, right: -100, height: 300, borderRadius: radii.full },
   slideContent: { alignItems: 'center', marginBottom: spacing['4xl'] },
   emojiContainer: { width: 120, height: 120, borderRadius: radii.full, backgroundColor: colors.primaryMuted, alignItems: 'center', justifyContent: 'center', marginBottom: spacing['3xl'] },

@@ -51,7 +51,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
 
     await setProfile({ nickname, bodyWeightKg: weightNum, age: ageNum, gender, heightCm });
     Alert.alert('Success', 'Profile saved!');
-    navigation.navigate('Home');
+    navigation.navigate('MainTabs');
   };
 
   return (

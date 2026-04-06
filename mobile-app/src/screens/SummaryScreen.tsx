@@ -35,7 +35,7 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
     navigation.reset({
       index: 1,
       routes: [
-        { name: 'Home' },
+        { name: 'MainTabs' },
         { name: 'WorkoutLogger' },
       ],
     });
@@ -107,7 +107,7 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
       </View>
 
       <View style={styles.actions}>
-        <Button variant="primary" size="lg" fullWidth onPress={() => navigation.navigate('Home')}>
+        <Button variant="primary" size="lg" fullWidth onPress={() => navigation.navigate('MainTabs')}>
           Back to Home
         </Button>
         <Button variant="secondary" size="lg" fullWidth onPress={handleShare}>

@@ -7,7 +7,11 @@ A real-time calorie burn tracker for strength training that calculates calories 
 ✅ Phase 0 — Python Calorie Engine (Complete)
 ✅ Phase 1 — Core App Skeleton (Complete)
 ✅ Phase 2 — WGER API Integration (Complete)
-🔧 Code Review Fixes (Complete)
+✅ Phase 3 — Complete UI Redesign (Complete)
+✅ Phase 4 — Exercise GIFs & Body Highlighter (Complete)
+✅ Phase 5 — Workout Logger Enhancements (Complete)
+✅ Phase 6 — Exercise Guides (Complete)
+✅ Phase 7 — 16 New Exercises Added (Complete)
 
 ---
 
@@ -19,50 +23,65 @@ A real-time calorie burn tracker for strength training that calculates calories 
 - Validated: bicep curl (70kg, 10kg, 3x10) → 22.8 kcal with EPOC
 
 ### Phase 1 — React Native App Skeleton ✅
-- 6 screens: Home, Profile, Exercise Select, Workout Logger, Summary, History
+- 7 screens: Home, Profile, Exercise Select, Workout Logger, Summary, History, Exercise Guide
 - Zustand state management with AsyncStorage persistence
 - TypeScript port of calorie engine (1:1 match with Python)
 - Live calorie counter that updates per-set
-- Dark theme throughout
 
 ### Phase 2 — WGER API Integration ✅
 - `src/api/wger.ts` — Fetches 896+ exercises from wger.de
 - Local caching with AsyncStorage (7-day TTL)
 - Muscle group mapping (WGER IDs → app-friendly groups)
 - Dynamic exercise loading in ExerciseSelectScreen
-- Search across all exercises (local + WGER)
 
-### Code Review Fixes ✅
-1. **TypeScript tests** — 21 Jest tests for calorieEngine.ts (mirrors Python tests)
-2. **finishSession() per-set calculation** — Now matches live calorie counter exactly
-3. **Input validation** — Rejects zero/negative weight and reps, shows warning styling
-4. **README** — Full documentation with setup instructions, formula explanation, project structure
-5. **app.json theme** — Changed from "light" to "dark" to match app
-6. **Cancel confirmation** — Alert dialog before discarding workout
-7. **progress.md** — Updated to reflect current status
+### Phase 3 — Complete UI Redesign ✅
+- **Theme**: Refined dark palette with emerald green primary, accent purple, gradient support
+- **UI Components**: Card (5 variants), Button (gradient primary), Badge, StatCard, Input
+- **HomeScreen**: Gradient hero card, SVG progress ring, week stats, recent workout cards
+- **OnboardingScreen**: Modern slides with emoji containers, profile setup form
+- **ProfileScreen**: Clean form layout, nickname field, height unit toggle (cm/ft)
+- **ExerciseSelectScreen**: 2-column grid with gradient cards, accent bars, muscle body highlighter, GIF thumbnails
+- **WorkoutLoggerScreen**: Animated calorie counter, collapsible header, set table layout, compact footer
+- **SummaryScreen**: Celebration hero, stats grid, exercise list, muscle group tags
+- **HistoryScreen**: Weekly summary, 7-week gradient bar chart, workout list with delete
+
+### Phase 4 — Exercise GIFs & Body Highlighter ✅
+- **86 exercise GIFs** downloaded from ExerciseDB API (7.9 MB total)
+- All GIFs verified and corrected (30 re-downloaded with correct exercises)
+- `react-native-body-highlighter` integrated for dynamic muscle group visualization
+- Each workout category shows a mini body with targeted muscles highlighted
+- GIFs bundled locally — **100% offline, no internet needed**
+
+### Phase 5 — Workout Logger Enhancements ✅
+- **Animated calorie counter** with smooth transitions
+- **Countdown rest timer** with presets (60s, 90s, 120s) and progress bar
+- **Set type indicators** — Warmup (W), Working (dot), Drop (D), Failure (F)
+- **PR badge** — Auto-detected when beating previous best
+- **Last session reference** — Shows previous weight/reps as ghost placeholder
+- **Delete individual sets** — × button on each set
+- **Set completion checkmarks** — Green highlight on completed sets
+
+### Phase 6 — Exercise Guides ✅
+- **69 exercise guides** with step-by-step instructions, pro tips, common mistakes
+- Hero GIF with gradient overlay and exercise name
+- Quick info strip (Focus, Steps, Tips)
+- Timeline-style step list with connected circles
+- Color-coded tips (green) and mistakes (red) cards
+- "How to" button on every exercise card in selection screen
+
+### Phase 7 — 16 New Dumbbell Exercises ✅
+- Added to library: dumbbell_incline_press, dumbbell_decline_press, dumbbell_deadlift, dumbbell_pullover, dumbbell_upright_row, dumbbell_scott_press, dumbbell_skull_crusher, dumbbell_incline_curl, dumbbell_step_up, dumbbell_romanian_deadlift, dumbbell_side_bend, mountain_climber, dumbbell_sumo_deadlift, dumbbell_kickback, dumbbell_squat, dumbbell_burpee
+- Added to respective workout categories
+- All have GIFs and instruction guides
 
 ---
 
-## What's Next
-### Phase 3 — Charts & Progress Graphs
-- Victory Native for weekly calorie history
-- Progress trends over time
-
-### Phase 4 — Polish
-- Smooth animations on calorie counter
-- Haptic feedback on rep input
-- Share workout summary (screenshot)
-- App icon and splash screen
-- Onboarding flow for new users
-
-### Phase 5 — Launch (Optional)
-- TestFlight / Internal Testing
-- App Store / Play Store submission
-
-### Phase 6 — AI Camera Mode (Future)
-- MediaPipe pose estimation
-- Auto rep counting
-- Exercise recognition
+## App Size
+- **Exercise GIFs**: 7.9 MB (86 files)
+- **Source code + assets**: ~1.5 MB
+- **Estimated APK (Android)**: ~30-35 MB
+- **Estimated IPA (iOS)**: ~35-45 MB
+- **100% offline** — no internet required
 
 ---
 
@@ -79,9 +98,11 @@ A real-time calorie burn tracker for strength training that calculates calories 
 - Epley formula for 1RM estimation
 - EPOC afterburn fixed at 7%
 - Monorepo structure (engine + mobile-app)
-- WGER API for exercise library (free, unlimited, cached locally)
 - Zustand for state management (simple, lightweight)
 - AsyncStorage for persistence (offline-first, no server needed)
+- ExerciseDB API for GIFs (downloaded once, bundled locally)
+- react-native-body-highlighter for muscle visualization
+- expo-image for animated GIF playback
 
 ---
 
