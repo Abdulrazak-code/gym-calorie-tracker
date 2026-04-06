@@ -1,9 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppStore } from '../store/appStore';
 
 export default function ProfileScreen({ navigation }: { navigation: any }) {
   const { profile, setProfile, loadProfile } = useAppStore();
+  const { height: windowHeight } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const headerHeight = 56;
+  const scrollViewHeight = windowHeight - insets.top - insets.bottom - headerHeight;
 
   const [weight, setWeight] = React.useState(profile ? profile.bodyWeightKg.toString() : '');
   const [age, setAge] = React.useState(profile ? profile.age.toString() : '');
@@ -33,19 +38,29 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
       return;
     }
 
-    await setProfile({
-      bodyWeightKg: weightNum,
-      age: ageNum,
-      gender,
-      heightCm: heightNum,
-    });
+    try {
+      await setProfile({
+        bodyWeightKg: weightNum,
+        age: ageNum,
+        gender,
+        heightCm: heightNum,
+      });
 
-    Alert.alert('Success', 'Profile saved!');
-    navigation.navigate('Home');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save profile. Please try again.');
+    }
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={[styles.scrollView, { height: scrollViewHeight }]} 
+      contentContainerStyle={styles.content} 
+      keyboardShouldPersistTaps="handled"
+    >
       <Text style={styles.title}>Profile Setup</Text>
 
       <Text style={styles.label}>Body Weight (kg)</Text>
@@ -93,12 +108,13 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
       <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
         <Text style={styles.saveBtnText}>Save Profile</Text>
       </TouchableOpacity>
-    </View>
+      </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', padding: 24 },
+  scrollView: { backgroundColor: '#121212' },
+  content: { padding: 24, paddingBottom: 48 },
   title: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 32 },
   label: { fontSize: 14, color: '#aaa', marginBottom: 6, marginTop: 16 },
   input: {

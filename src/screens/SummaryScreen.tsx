@@ -73,7 +73,7 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
       <View style={styles.actions}>
         <TouchableOpacity
           style={styles.actionBtn}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Home' }] })}
         >
           <Text style={styles.actionBtnText}>Back to Home</Text>
         </TouchableOpacity>
