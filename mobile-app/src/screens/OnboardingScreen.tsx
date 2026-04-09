@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppStore } from '../store/appStore';
 import { colors, spacing, radii, typography } from '../theme';
@@ -26,14 +27,30 @@ export default function OnboardingScreen({ navigation }: { navigation: any }) {
     const weightNum = parseFloat(weight);
     const ageNum = parseInt(age, 10);
     const heightNum = parseFloat(height);
-    if (!weightNum || !ageNum || !heightNum) return;
+
+    if (!weightNum || isNaN(weightNum)) {
+      Alert.alert('Missing Info', 'Please enter a valid weight.');
+      return;
+    }
+    if (!ageNum || isNaN(ageNum)) {
+      Alert.alert('Missing Info', 'Please enter a valid age.');
+      return;
+    }
+    if (!heightNum || isNaN(heightNum)) {
+      Alert.alert('Missing Info', 'Please enter a valid height.');
+      return;
+    }
 
     const heightCm = heightUnit === 'ft' ? heightNum * 30.48 : heightNum;
 
-    await useAppStore.getState().setProfile({
-      nickname, bodyWeightKg: weightNum, age: ageNum, gender, heightCm,
-    });
-    navigation.replace('MainTabs');
+    try {
+      await useAppStore.getState().setProfile({
+        nickname, bodyWeightKg: weightNum, age: ageNum, gender, heightCm,
+      });
+      navigation.replace('MainTabs');
+    } catch (err) {
+      Alert.alert('Error', 'Could not save profile. Please try again.');
+    }
   };
 
   const slide = slides[step];
@@ -67,8 +84,7 @@ export default function OnboardingScreen({ navigation }: { navigation: any }) {
   }
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+    <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} enableOnAndroid={true} extraScrollHeight={20} enableAutomaticScroll={true}>
       <View style={styles.formHeader}>
         <Text style={styles.formTitle}>Set Up Your Profile</Text>
         <Text style={styles.formSubtitle}>We need a few details to calculate your calorie burn accurately</Text>
@@ -86,10 +102,10 @@ export default function OnboardingScreen({ navigation }: { navigation: any }) {
               <TouchableOpacity
                 style={[styles.unitBtn, heightUnit === 'cm' && styles.unitBtnActive]}
                 onPress={() => {
-                  const cm = parseFloat(height);
-                  if (!isNaN(cm)) {
+                  if (heightUnit === 'ft') {
+                    const ft = parseFloat(height);
                     setHeightUnit('cm');
-                    setHeight(cm.toString());
+                    setHeight(!isNaN(ft) && height !== '' ? (ft * 30.48).toFixed(1) : '');
                   }
                 }}
               >
@@ -98,10 +114,10 @@ export default function OnboardingScreen({ navigation }: { navigation: any }) {
               <TouchableOpacity
                 style={[styles.unitBtn, heightUnit === 'ft' && styles.unitBtnActive]}
                 onPress={() => {
-                  const cm = parseFloat(height);
-                  if (!isNaN(cm)) {
+                  if (heightUnit === 'cm') {
+                    const cm = parseFloat(height);
                     setHeightUnit('ft');
-                    setHeight((cm / 30.48).toFixed(2));
+                    setHeight(!isNaN(cm) && height !== '' ? (cm / 30.48).toFixed(2) : '');
                   }
                 }}
               >
@@ -138,12 +154,11 @@ export default function OnboardingScreen({ navigation }: { navigation: any }) {
         </View>
 
         <View style={styles.spacer} />
-        <Button variant="primary" size="lg" fullWidth onPress={handleFinish} disabled={!weight || !age || !height}>
+        <Button variant="primary" size="lg" fullWidth onPress={handleFinish}>
           Start Tracking
         </Button>
       </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -162,7 +177,7 @@ const styles = StyleSheet.create({
   formHeader: { marginBottom: spacing['3xl'] },
   formTitle: { ...typography.h1, color: colors.text, textAlign: 'center', marginBottom: spacing.sm },
   formSubtitle: { ...typography.body, color: colors.textMuted, textAlign: 'center' },
-  form: { flex: 1 },
+  form: {},
   label: { ...typography.label, color: colors.textSecondary, marginBottom: spacing.sm, marginTop: spacing.md },
   heightSection: { marginBottom: spacing.lg },
   heightHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.sm },

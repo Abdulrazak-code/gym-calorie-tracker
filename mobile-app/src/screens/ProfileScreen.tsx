@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useAppStore } from '../store/appStore';
 import { colors, spacing, radii, typography } from '../theme';
 import { Button, Input } from '../components/ui';
@@ -55,7 +56,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" enableOnAndroid={true} extraScrollHeight={20} enableAutomaticScroll={true}>
       <View style={styles.header}>
         <Text style={styles.title}>Profile</Text>
         <Text style={styles.subtitle}>Update your body metrics for accurate calorie calculations</Text>
@@ -85,10 +86,10 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
               <TouchableOpacity
                 style={[styles.unitBtn, heightUnit === 'cm' && styles.unitBtnActive]}
                 onPress={() => {
-                  const cm = parseFloat(height);
-                  if (!isNaN(cm)) {
+                  if (heightUnit === 'ft') {
+                    const ft = parseFloat(height);
                     setHeightUnit('cm');
-                    setHeight(cm.toString());
+                    setHeight(height !== '' && !isNaN(ft) ? (ft * 30.48).toFixed(1) : '');
                   }
                 }}
               >
@@ -97,10 +98,10 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
               <TouchableOpacity
                 style={[styles.unitBtn, heightUnit === 'ft' && styles.unitBtnActive]}
                 onPress={() => {
-                  const cm = parseFloat(height);
-                  if (!isNaN(cm)) {
+                  if (heightUnit === 'cm') {
+                    const cm = parseFloat(height);
                     setHeightUnit('ft');
-                    setHeight((cm / 30.48).toFixed(2));
+                    setHeight(height !== '' && !isNaN(cm) ? (cm / 30.48).toFixed(2) : '');
                   }
                 }}
               >
@@ -141,7 +142,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
           Save Profile
         </Button>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useAppStore } from '../store/appStore';
 import { colors, spacing, radii, typography } from '../theme';
 import { Card, Button, StatCard } from '../components/ui';
@@ -64,6 +66,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   }, []);
 
   const handleStartWorkout = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (!profile) {
       navigation.navigate('Profile');
       return;
@@ -102,7 +105,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
           </View>
           <TouchableOpacity style={styles.heroButton} onPress={handleStartWorkout} activeOpacity={0.85}>
             <Text style={styles.heroButtonText}>Begin</Text>
-            <Text style={styles.heroButtonArrow}>→</Text>
+            <Ionicons name="arrow-forward" size={18} color={colors.white} style={{ marginLeft: spacing.xs }} />
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -146,7 +149,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
               <View style={styles.sessionRow}>
                 <View style={styles.sessionLeft}>
                   <View style={styles.sessionIcon}>
-                    <Text style={styles.sessionIconText}>🏋️</Text>
+                    <MaterialCommunityIcons name="dumbbell" size={22} color={colors.primary} />
                   </View>
                   <View style={styles.sessionInfo}>
                     <Text style={styles.sessionDate}>
@@ -159,7 +162,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
                   </View>
                 </View>
                 <View style={styles.sessionArrow}>
-                  <Text style={styles.sessionArrowText}>→</Text>
+                  <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
                 </View>
               </View>
             </Card>
@@ -172,7 +175,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing['2xl'], paddingBottom: spacing['4xl'] },
+  content: { padding: spacing.xl, paddingBottom: spacing['4xl'] },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing['2xl'] },
   headerLeft: { flex: 1 },
   greeting: { ...typography.label, color: colors.textMuted, marginBottom: spacing.xs },
@@ -200,11 +203,9 @@ const styles = StyleSheet.create({
   sessionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   sessionLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   sessionIcon: { width: 44, height: 44, borderRadius: radii.md, backgroundColor: colors.primaryMuted, alignItems: 'center', justifyContent: 'center' },
-  sessionIconText: { fontSize: 20 },
   sessionInfo: { flex: 1 },
   sessionDate: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs },
   sessionCalories: { ...typography.h4, color: colors.primary, marginBottom: spacing.xs },
   sessionMeta: { ...typography.bodySm, color: colors.textSecondary },
   sessionArrow: { width: 32, height: 32, borderRadius: radii.full, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
-  sessionArrowText: { fontSize: 16, color: colors.textMuted },
 });

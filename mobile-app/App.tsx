@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,8 +28,10 @@ function MainTabs() {
         tabBarStyle: {
           backgroundColor: '#09090b',
           borderTopColor: '#27272a',
-          paddingBottom: 4,
           height: 60,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 6,
         },
         tabBarActiveTintColor: '#10b981',
         tabBarInactiveTintColor: '#6b7280',
@@ -78,6 +81,7 @@ export default function App() {
   if (hasProfile === null) return null;
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <StatusBar style="light" />
       <NavigationContainer>
@@ -124,5 +128,6 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

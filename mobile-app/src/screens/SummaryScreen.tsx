@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Share, TouchableOpacity, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { WorkoutSession } from '../types';
 import { useAppStore } from '../store/appStore';
@@ -18,6 +19,7 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
   }
 
   const handleShare = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const exerciseLines = session.exercises.map((logged) => {
       const ex = findExercise(logged.exerciseKey);
       const totalReps = logged.sets.reduce((sum, s) => sum + s.reps, 0);
