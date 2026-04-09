@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Exercise GIFs</title>
+<style>
+body{background:#09090b;color:#fafafa;font-family:sans-serif;padding:20px}
+h1{text-align:center}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.c{background:#111;border:2px solid #27272a;border-radius:12px;overflow:hidden}
+.c.w{border-color:#f44}
+.c img{width:100%;height:220px;object-fit:contain;background:#fff}
+.i{padding:12px}
+.n{font-weight:700;font-size:15px}
+.k{font-size:10px;color:#888;font-family:monospace}
+.f{font-size:12px;color:#4db;margin-top:4px}
+.e{font-size:11px;color:#a86;margin-top:2px}
+.b{display:flex;gap:6px;margin-top:10px}
+.b button{flex:1;padding:8px;border:2px solid #27272a;border-radius:6px;cursor:pointer;font-weight:700;background:0 0;font-size:12px}
+.b .ok{color:#4db;border-color:#4db3}
+.b .ok.a{background:#4db;color:#fff;border-color:#4db}
+.b .no{color:#f44;border-color:#f443}
+.b .no.a{background:#f44;color:#fff;border-color:#f44}
+</style>
+</head>
+<body>
+<h1>Exercise GIF Verification</h1>
+<p style="text-align:center;color:#888">Click Correct or Wrong for each exercise</p>
+<div id="counter" style="text-align:center;margin:16px 0;font-size:18px">
+<span style="color:#4db">Correct: <b id="cc">0</b></span> &nbsp;|&nbsp;
+<span style="color:#f44">Wrong: <b id="wc">0</b></span> &nbsp;|&nbsp;
+<span style="color:#888">Total: <b>53</b></span>
+</div>
+<div class="g" id="g"></div>
+<script>
+var data=[
+{k:"bench_press",n:"Bench Press (Close Grip)",f:"Triceps, Chest",e:"Barbell",g:"bench_press.gif"},
+{k:"incline_bench_press",n:"Incline Bench Press",f:"Upper Chest, Shoulders",e:"Barbell",g:"incline_bench_press.gif"},
+{k:"dumbbell_chest_press",n:"Dumbbell Chest Press",f:"Chest, Shoulders",e:"Dumbbells",g:"dumbbell_chest_press.gif"},
+{k:"chest_fly",n:"Dumbbell Chest Fly",f:"Chest, Shoulders",e:"Dumbbells",g:"chest_fly.gif"},
+{k:"push_up",n:"Push-Up",f:"Chest, Shoulders",e:"Body Weight",g:"push_up.gif"},
+{k:"cable_crossover",n:"Cable Crossover",f:"Chest",e:"Cable",g:"cable_crossover.gif"},
+{k:"decline_bench_press",n:"Decline Bench Press",f:"Lower Chest",e:"Barbell",g:"decline_bench_press.gif"},
+{k:"deadlift",n:"Deadlift",f:"Back, Glutes",e:"Barbell",g:"deadlift.gif"},
+{k:"bent_over_row",n:"Bent-Over Row",f:"Back, Biceps",e:"Barbell",g:"bent_over_row.gif"},
+{k:"lat_pulldown",n:"Lat Pulldown",f:"Back, Biceps",e:"Cable",g:"lat_pulldown.gif"},
+{k:"seated_row",n:"Seated Cable Row",f:"Back, Biceps",e:"Cable",g:"seated_row.gif"},
+{k:"pull_up",n:"Pull-Up",f:"Back, Biceps",e:"Bar",g:"pull_up.gif"},
+{k:"t_bar_row",n:"T-Bar Row",f:"Back, Biceps",e:"T-Bar",g:"t_bar_row.gif"},
+{k:"single_arm_row",n:"One-Arm Row",f:"Back, Biceps",e:"Dumbbell",g:"single_arm_row.gif"},
+{k:"shoulder_press",n:"Shoulder Press",f:"Shoulders",e:"Dumbbells",g:"shoulder_press.gif"},
+{k:"lateral_raise",n:"Lateral Raise",f:"Shoulders",e:"Dumbbells",g:"lateral_raise.gif"},
+{k:"front_raise",n:"Front Raise",f:"Shoulders",e:"Dumbbells",g:"front_raise.gif"},
+{k:"upright_row",n:"Upright Row",f:"Shoulders, Traps",e:"Barbell",g:"upright_row.gif"},
+{k:"face_pull",n:"Face Pull",f:"Rear Delts",e:"Cable",g:"face_pull.gif"},
+{k:"reverse_fly",n:"Reverse Fly",f:"Rear Delts",e:"Dumbbells",g:"reverse_fly.gif"},
+{k:"arnold_press",n:"Arnold Press",f:"Shoulders",e:"Dumbbells",g:"arnold_press.gif"},
+{k:"bicep_curl",n:"Bicep Curl",f:"Biceps",e:"Dumbbells",g:"bicep_curl.gif"},
+{k:"hammer_curl",n:"Hammer Curl",f:"Biceps, Forearms",e:"Dumbbells",g:"hammer_curl.gif"},
+{k:"concentration_curl",n:"Concentration Curl",f:"Biceps",e:"Dumbbell",g:"concentration_curl.gif"},
+{k:"preacher_curl",n:"Preacher Curl",f:"Biceps",e:"Barbell",g:"preacher_curl.gif"},
+{k:"tricep_pushdown",n:"Tricep Pushdown",f:"Triceps",e:"Cable",g:"tricep_pushdown.gif"},
+{k:"overhead_tricep_extension",n:"Overhead Tricep Ext",f:"Triceps",e:"Cable",g:"overhead_tricep_extension.gif"},
+{k:"skull_crusher",n:"Skull Crusher",f:"Triceps",e:"EZ Bar",g:"skull_crusher.gif"},
+{k:"dips",n:"Dips",f:"Chest, Triceps",e:"Bars",g:"dips.gif"},
+{k:"close_grip_bench",n:"Close Grip Bench",f:"Triceps, Chest",e:"Barbell",g:"close_grip_bench.gif"},
+{k:"squat",n:"Barbell Squat",f:"Quads, Glutes",e:"Barbell",g:"squat.gif"},
+{k:"leg_press",n:"Leg Press",f:"Quads, Glutes",e:"Machine",g:"leg_press.gif"},
+{k:"leg_curl",n:"Leg Curl",f:"Hamstrings",e:"Machine",g:"leg_curl.gif"},
+{k:"leg_extension",n:"Leg Extension",f:"Quads",e:"Machine",g:"leg_extension.gif"},
+{k:"lunges",n:"Dumbbell Lunge",f:"Quads, Glutes",e:"Dumbbells",g:"lunges.gif"},
+{k:"romanian_deadlift",n:"Romanian Deadlift",f:"Hamstrings",e:"Barbell",g:"romanian_deadlift.gif"},
+{k:"bulgarian_split_squat",n:"Bulgarian Split Squat",f:"Quads, Glutes",e:"Dumbbells",g:"bulgarian_split_squat.gif"},
+{k:"calf_raise",n:"Calf Raise",f:"Calves",e:"Machine",g:"calf_raise.gif"},
+{k:"seated_calf_raise",n:"Seated Calf Raise",f:"Calves",e:"Machine",g:"seated_calf_raise.gif"},
+{k:"crunches",n:"Crunches",f:"Abs",e:"Body Weight",g:"crunches.gif"},
+{k:"plank",n:"Plank",f:"Core, Abs",e:"Body Weight",g:"plank.gif"},
+{k:"russian_twist",n:"Russian Twist",f:"Obliques",e:"Body Weight",g:"russian_twist.gif"},
+{k:"hanging_leg_raise",n:"Hanging Leg Raise",f:"Lower Abs",e:"Bar",g:"hanging_leg_raise.gif"},
+{k:"cable_crunch",n:"Cable Crunch",f:"Abs",e:"Cable",g:"cable_crunch.gif"},
+{k:"ab_wheel",n:"Ab Wheel",f:"Core, Abs",e:"Wheel",g:"ab_wheel.gif"},
+{k:"hip_thrust",n:"Hip Thrust",f:"Glutes",e:"Barbell",g:"hip_thrust.gif"},
+{k:"glute_bridge",n:"Glute Bridge",f:"Glutes",e:"Body Weight",g:"glute_bridge.gif"},
+{k:"cable_kickback",n:"Cable Kickback",f:"Glutes",e:"Cable",g:"cable_kickback.gif"},
+{k:"sumo_squat",n:"Sumo Squat",f:"Inner Thighs",e:"Dumbbell",g:"sumo_squat.gif"},
+{k:"kettlebell_swings",n:"Kettlebell Swing",f:"Glutes, Core",e:"Kettlebell",g:"kettlebell_swings.gif"},
+{k:"burpees",n:"Burpee",f:"Full Body",e:"Body Weight",g:"burpees.gif"},
+{k:"clean_and_press",n:"Clean and Press",f:"Full Body",e:"Barbell",g:"clean_and_press.gif"},
+{k:"thrusters",n:"Thruster",f:"Full Body",e:"Barbell",g:"thrusters.gif"}
+];
+
+var st={};
+var grid=document.getElementById("g");
+
+data.forEach(function(d){
+  var card=document.createElement("div");
+  card.className="c";
+  card.id="c-"+d.k;
+
+  var img=document.createElement("img");
+  img.src="../mobile-app/assets/exercise-gifs/"+d.g;
+  img.onerror=function(){this.style.background="#333";this.alt="No GIF";};
+  card.appendChild(img);
+
+  var info=document.createElement("div");
+  info.className="i";
+
+  var name=document.createElement("div");
+  name.className="n";
+  name.textContent=d.n;
+  info.appendChild(name);
+
+  var key=document.createElement("div");
+  key.className="k";
+  key.textContent=d.k;
+  info.appendChild(key);
+
+  var focus=document.createElement("div");
+  focus.className="f";
+  focus.textContent=d.f;
+  info.appendChild(focus);
+
+  var equip=document.createElement("div");
+  equip.className="e";
+  equip.textContent=d.e;
+  info.appendChild(equip);
+
+  var btns=document.createElement("div");
+  btns.className="b";
+
+  var okBtn=document.createElement("button");
+  okBtn.className="ok a";
+  okBtn.textContent="Correct";
+  okBtn.onclick=(function(key){
+    return function(){
+      st[key]="ok";
+      var c=document.getElementById("c-"+key);
+      if(c)c.className="c";
+      var b=this.parentNode;
+      b.children[0].className="ok a";
+      b.children[1].className="no";
+      updateCount();
+    };
+  })(d.k);
+  btns.appendChild(okBtn);
+
+  var noBtn=document.createElement("button");
+  noBtn.className="no";
+  noBtn.textContent="Wrong";
+  noBtn.onclick=(function(key){
+    return function(){
+      st[key]="no";
+      var c=document.getElementById("c-"+key);
+      if(c)c.className="c w";
+      var b=this.parentNode;
+      b.children[0].className="ok";
+      b.children[1].className="no a";
+      updateCount();
+    };
+  })(d.k);
+  btns.appendChild(noBtn);
+  info.appendChild(btns);
+  card.appendChild(info);
+  grid.appendChild(card);
+});
+
+function updateCount(){
+  var c=0,w=0;
+  Object.keys(st).forEach(function(k){if(st[k]==="ok")c++;if(st[k]==="no")w++;});
+  document.getElementById("cc").textContent=c;
+  document.getElementById("wc").textContent=w;
+}
+
+function exportWrong(){
+  var wl=[];
+  data.forEach(function(d){if(st[d.k]==="no")wl.push(d.k+" - "+d.n);});
+  if(wl.length===0){alert("No wrong GIFs!");return;}
+  var t="WRONG GIFS:\n"+wl.join("\n");
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){alert("Copied "+wl.length+" wrong exercises!");});
+  else{prompt("Copy these:",t);}
+}
+</script>
+</body>
+</html>

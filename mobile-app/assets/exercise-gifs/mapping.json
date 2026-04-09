@@ -1,0 +1,1319 @@
+{
+  "bench_press": {
+    "filename": "bench_press.gif",
+    "sizeKB": 121.5,
+    "exerciseName": "barbell bench press",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "incline_bench_press": {
+    "filename": "incline_bench_press.gif",
+    "sizeKB": 112.7,
+    "exerciseName": "barbell incline bench press",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_chest_press": {
+    "filename": "dumbbell_chest_press.gif",
+    "sizeKB": 98.3,
+    "exerciseName": "dumbbell bench press",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "chest_fly": {
+    "filename": "chest_fly.gif",
+    "sizeKB": 108.4,
+    "exerciseName": "dumbbell fly",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "push_up": {
+    "filename": "push_up.gif",
+    "sizeKB": 85.5,
+    "exerciseName": "push-up",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "cable_crossover": {
+    "filename": "cable_crossover.gif",
+    "sizeKB": 66.3,
+    "exerciseName": "cable cross-over variation",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "cable"
+    ],
+    "verified": true
+  },
+  "decline_bench_press": {
+    "filename": "decline_bench_press.gif",
+    "sizeKB": 115.2,
+    "exerciseName": "barbell decline bench press",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "deadlift": {
+    "filename": "deadlift.gif",
+    "sizeKB": 81.3,
+    "exerciseName": "barbell deadlift",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "bent_over_row": {
+    "filename": "bent_over_row.gif",
+    "sizeKB": 98.5,
+    "exerciseName": "barbell bent over row",
+    "targetMuscles": [
+      "upper back"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "barbell"
+    ]
+  },
+  "lat_pulldown": {
+    "filename": "lat_pulldown.gif",
+    "sizeKB": 125.6,
+    "exerciseName": "reverse grip machine lat pulldown",
+    "targetMuscles": [
+      "lats"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "leverage machine"
+    ]
+  },
+  "seated_row": {
+    "filename": "seated_row.gif",
+    "sizeKB": 100.6,
+    "exerciseName": "cable seated row",
+    "targetMuscles": [
+      "upper back"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "cable"
+    ],
+    "verified": true
+  },
+  "pull_up": {
+    "filename": "pull_up.gif",
+    "sizeKB": 61.2,
+    "exerciseName": "pull-up",
+    "targetMuscles": [
+      "lats"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "t_bar_row": {
+    "filename": "t_bar_row.gif",
+    "sizeKB": 114.4,
+    "exerciseName": "lever reverse t-bar row",
+    "targetMuscles": [
+      "upper back"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "leverage machine"
+    ]
+  },
+  "single_arm_row": {
+    "filename": "single_arm_row.gif",
+    "sizeKB": 102.8,
+    "exerciseName": "dumbbell bent over row",
+    "targetMuscles": [
+      "upper back"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "shoulder_press": {
+    "filename": "shoulder_press.gif",
+    "sizeKB": 84.5,
+    "exerciseName": "dumbbell arnold press",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "dumbbell"
+    ]
+  },
+  "lateral_raise": {
+    "filename": "lateral_raise.gif",
+    "sizeKB": 85.6,
+    "exerciseName": "dumbbell lateral raise",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "dumbbell"
+    ]
+  },
+  "front_raise": {
+    "filename": "front_raise.gif",
+    "sizeKB": 78.7,
+    "exerciseName": "dumbbell front raise",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "upright_row": {
+    "filename": "upright_row.gif",
+    "sizeKB": 76.9,
+    "exerciseName": "barbell upright row",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "barbell"
+    ]
+  },
+  "face_pull": {
+    "filename": "face_pull.gif",
+    "sizeKB": 98.5,
+    "exerciseName": "cable rear pulldown",
+    "targetMuscles": [
+      "lats"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "cable"
+    ],
+    "verified": true
+  },
+  "reverse_fly": {
+    "filename": "reverse_fly.gif",
+    "sizeKB": 116.4,
+    "exerciseName": "dumbbell reverse fly",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "arnold_press": {
+    "filename": "arnold_press.gif",
+    "sizeKB": 84.5,
+    "exerciseName": "dumbbell arnold press",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "bicep_curl": {
+    "filename": "bicep_curl.gif",
+    "sizeKB": 85.1,
+    "exerciseName": "barbell biceps curl (with arm blaster)",
+    "targetMuscles": [
+      "biceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "hammer_curl": {
+    "filename": "hammer_curl.gif",
+    "sizeKB": 76.5,
+    "exerciseName": "dumbbell hammer curl",
+    "targetMuscles": [
+      "biceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "concentration_curl": {
+    "filename": "concentration_curl.gif",
+    "sizeKB": 115.1,
+    "exerciseName": "dumbbell concentration curl",
+    "targetMuscles": [
+      "biceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "preacher_curl": {
+    "filename": "preacher_curl.gif",
+    "sizeKB": 139.5,
+    "exerciseName": "lever preacher curl",
+    "targetMuscles": [
+      "biceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "leverage machine"
+    ]
+  },
+  "tricep_pushdown": {
+    "filename": "tricep_pushdown.gif",
+    "sizeKB": 87.7,
+    "exerciseName": "cable triceps pushdown (v-bar)",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "cable"
+    ]
+  },
+  "overhead_tricep_extension": {
+    "filename": "overhead_tricep_extension.gif",
+    "sizeKB": 84,
+    "exerciseName": "cable high pulley overhead tricep extension",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "cable"
+    ]
+  },
+  "skull_crusher": {
+    "filename": "skull_crusher.gif",
+    "sizeKB": 101.1,
+    "exerciseName": "barbell lying triceps extension skull crusher",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "barbell"
+    ]
+  },
+  "dips": {
+    "filename": "dips.gif",
+    "sizeKB": 85.6,
+    "exerciseName": "triceps dip",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "close_grip_bench": {
+    "filename": "close_grip_bench.gif",
+    "sizeKB": 106.7,
+    "exerciseName": "barbell incline close grip bench press",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "squat": {
+    "filename": "squat.gif",
+    "sizeKB": 86,
+    "exerciseName": "barbell full squat",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "leg_press": {
+    "filename": "leg_press.gif",
+    "sizeKB": 87.3,
+    "exerciseName": "sled 45° leg press",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "leverage machine"
+    ],
+    "verified": true
+  },
+  "leg_curl": {
+    "filename": "leg_curl.gif",
+    "sizeKB": 112.1,
+    "exerciseName": "lever lying leg curl",
+    "targetMuscles": [
+      "hamstrings"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "leverage machine"
+    ]
+  },
+  "leg_extension": {
+    "filename": "leg_extension.gif",
+    "sizeKB": 139.5,
+    "exerciseName": "lever leg extension",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "leverage machine"
+    ],
+    "verified": true
+  },
+  "lunges": {
+    "filename": "lunges.gif",
+    "sizeKB": 74.3,
+    "exerciseName": "dumbbell lunge",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "romanian_deadlift": {
+    "filename": "romanian_deadlift.gif",
+    "sizeKB": 86.6,
+    "exerciseName": "barbell romanian deadlift",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "barbell"
+    ]
+  },
+  "bulgarian_split_squat": {
+    "filename": "bulgarian_split_squat.gif",
+    "sizeKB": 92.7,
+    "exerciseName": "barbell side split squat",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "calf_raise": {
+    "filename": "calf_raise.gif",
+    "sizeKB": 88.9,
+    "exerciseName": "barbell standing calf raise",
+    "targetMuscles": [
+      "calves"
+    ],
+    "bodyParts": [
+      "lower legs"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "seated_calf_raise": {
+    "filename": "seated_calf_raise.gif",
+    "sizeKB": 118,
+    "exerciseName": "barbell seated calf raise",
+    "targetMuscles": [
+      "calves"
+    ],
+    "bodyParts": [
+      "lower legs"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "crunches": {
+    "filename": "crunches.gif",
+    "sizeKB": 115.7,
+    "exerciseName": "weighted crunch",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "weighted"
+    ]
+  },
+  "plank": {
+    "filename": "plank.gif",
+    "sizeKB": 59.3,
+    "exerciseName": "weighted front plank",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "weighted"
+    ],
+    "verified": true
+  },
+  "russian_twist": {
+    "filename": "russian_twist.gif",
+    "sizeKB": 148.8,
+    "exerciseName": "russian twist",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "body weight"
+    ]
+  },
+  "hanging_leg_raise": {
+    "filename": "hanging_leg_raise.gif",
+    "sizeKB": 60.8,
+    "exerciseName": "hanging leg raise",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "body weight"
+    ]
+  },
+  "cable_crunch": {
+    "filename": "cable_crunch.gif",
+    "sizeKB": 99.3,
+    "exerciseName": "cable kneeling crunch",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "cable"
+    ],
+    "verified": true
+  },
+  "ab_wheel": {
+    "filename": "ab_wheel.gif",
+    "sizeKB": 66.9,
+    "exerciseName": "standing wheel rollerout",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "wheel roller"
+    ]
+  },
+  "hip_thrust": {
+    "filename": "hip_thrust.gif",
+    "sizeKB": 58.4,
+    "exerciseName": "resistance band hip thrusts on knees (female)",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "resistance band"
+    ]
+  },
+  "glute_bridge": {
+    "filename": "glute_bridge.gif",
+    "sizeKB": 115.9,
+    "exerciseName": "barbell glute bridge",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "barbell"
+    ]
+  },
+  "cable_kickback": {
+    "filename": "cable_kickback.gif",
+    "sizeKB": 104.8,
+    "exerciseName": "cable kickback",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "cable"
+    ],
+    "autoMismatch": false
+  },
+  "sumo_squat": {
+    "filename": "sumo_squat.gif",
+    "sizeKB": 111.1,
+    "exerciseName": "smith sumo squat",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "smith machine"
+    ],
+    "verified": true
+  },
+  "kettlebell_swings": {
+    "filename": "kettlebell_swings.gif",
+    "sizeKB": 61.4,
+    "exerciseName": "kettlebell swing",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "kettlebell"
+    ],
+    "verified": true
+  },
+  "burpees": {
+    "filename": "burpees.gif",
+    "sizeKB": 97.9,
+    "exerciseName": "burpee",
+    "targetMuscles": [
+      "cardiovascular system"
+    ],
+    "bodyParts": [
+      "cardio"
+    ],
+    "equipments": [
+      "body weight"
+    ]
+  },
+  "clean_and_press": {
+    "filename": "clean_and_press.gif",
+    "sizeKB": 124.9,
+    "exerciseName": "barbell clean and press",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "barbell"
+    ]
+  },
+  "thrusters": {
+    "filename": "thrusters.gif",
+    "sizeKB": 94.5,
+    "exerciseName": "barbell thruster",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "barbell"
+    ]
+  },
+  "pec_deck": {
+    "filename": "pec_deck.gif",
+    "sizeKB": 0,
+    "exerciseName": "pec deck fly",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "machine"
+    ],
+    "verified": false,
+    "noGif": true
+  },
+  "landmine_press": {
+    "filename": "landmine_press.gif",
+    "sizeKB": 0,
+    "exerciseName": "landmine press",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": false,
+    "noGif": true
+  },
+  "straight_arm_pulldown": {
+    "filename": "straight_arm_pulldown.gif",
+    "sizeKB": 62.2,
+    "exerciseName": "cable straight arm pulldown",
+    "targetMuscles": [
+      "lats"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "cable"
+    ],
+    "verified": true
+  },
+  "rack_pull": {
+    "filename": "rack_pull.gif",
+    "sizeKB": 92.5,
+    "exerciseName": "barbell rack pull",
+    "targetMuscles": [
+      "upper back"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "cable_pullover": {
+    "filename": "cable_pullover.gif",
+    "sizeKB": 110,
+    "exerciseName": "dumbbell pullover",
+    "targetMuscles": [
+      "lats"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "cable_lateral_raise": {
+    "filename": "cable_lateral_raise.gif",
+    "sizeKB": 125,
+    "exerciseName": "cable lateral raise",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "cable"
+    ],
+    "verified": true
+  },
+  "barbell_shrug": {
+    "filename": "barbell_shrug.gif",
+    "sizeKB": 98.1,
+    "exerciseName": "barbell shrug",
+    "targetMuscles": [
+      "traps"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "cable_curl": {
+    "filename": "cable_curl.gif",
+    "sizeKB": 79.8,
+    "exerciseName": "cable curl",
+    "targetMuscles": [
+      "biceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "cable"
+    ],
+    "verified": true
+  },
+  "reverse_curl": {
+    "filename": "reverse_curl.gif",
+    "sizeKB": 95,
+    "exerciseName": "barbell reverse curl",
+    "targetMuscles": [
+      "biceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "bench_dip": {
+    "filename": "bench_dip.gif",
+    "sizeKB": 93.4,
+    "exerciseName": "weighted bench dip",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "hack_squat": {
+    "filename": "hack_squat.gif",
+    "sizeKB": 111,
+    "exerciseName": "sled hack squat",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "leverage machine"
+    ],
+    "verified": true
+  },
+  "goblet_squat": {
+    "filename": "goblet_squat.gif",
+    "sizeKB": 67.2,
+    "exerciseName": "dumbbell goblet squat",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "good_morning": {
+    "filename": "good_morning.gif",
+    "sizeKB": 83.8,
+    "exerciseName": "barbell good morning",
+    "targetMuscles": [
+      "hamstrings"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "barbell"
+    ],
+    "verified": true
+  },
+  "bicycle_crunch": {
+    "filename": "bicycle_crunch.gif",
+    "sizeKB": 73.8,
+    "exerciseName": "bicycle crunch",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "leg_raise": {
+    "filename": "leg_raise.gif",
+    "sizeKB": 71.2,
+    "exerciseName": "lying leg raise flat bench",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "side_plank": {
+    "filename": "side_plank.gif",
+    "sizeKB": 98.2,
+    "exerciseName": "side plank",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "donkey_kick": {
+    "filename": "donkey_kick.gif",
+    "sizeKB": 104.7,
+    "exerciseName": "donkey kick",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "frog_pump": {
+    "filename": "frog_pump.gif",
+    "sizeKB": 0,
+    "exerciseName": "frog pump",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": false,
+    "noGif": true
+  },
+  "battle_ropes": {
+    "filename": "battle_ropes.gif",
+    "sizeKB": 59.4,
+    "exerciseName": "battling ropes",
+    "targetMuscles": [
+      "cardiovascular system"
+    ],
+    "bodyParts": [
+      "cardio"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "box_jump": {
+    "filename": "box_jump.gif",
+    "sizeKB": 96.6,
+    "exerciseName": "box jump",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "dumbbell_incline_press": {
+    "filename": "dumbbell_incline_press.gif",
+    "sizeKB": 80.8,
+    "exerciseName": "dumbbell incline bench press",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_decline_press": {
+    "filename": "dumbbell_decline_press.gif",
+    "sizeKB": 86.9,
+    "exerciseName": "dumbbell decline bench press",
+    "targetMuscles": [
+      "pectorals"
+    ],
+    "bodyParts": [
+      "chest"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_deadlift": {
+    "filename": "dumbbell_deadlift.gif",
+    "sizeKB": 67.2,
+    "exerciseName": "dumbbell deadlift",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_pullover": {
+    "filename": "dumbbell_pullover.gif",
+    "sizeKB": 110,
+    "exerciseName": "dumbbell pullover",
+    "targetMuscles": [
+      "lats"
+    ],
+    "bodyParts": [
+      "back"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_upright_row": {
+    "filename": "dumbbell_upright_row.gif",
+    "sizeKB": 74,
+    "exerciseName": "dumbbell upright row",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_scott_press": {
+    "filename": "dumbbell_scott_press.gif",
+    "sizeKB": 52.5,
+    "exerciseName": "dumbbell scott press",
+    "targetMuscles": [
+      "delts"
+    ],
+    "bodyParts": [
+      "shoulders"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_skull_crusher": {
+    "filename": "dumbbell_skull_crusher.gif",
+    "sizeKB": 121.1,
+    "exerciseName": "dumbbell skull crusher",
+    "targetMuscles": [
+      "triceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_incline_curl": {
+    "filename": "dumbbell_incline_curl.gif",
+    "sizeKB": 99,
+    "exerciseName": "dumbbell incline curl",
+    "targetMuscles": [
+      "biceps"
+    ],
+    "bodyParts": [
+      "upper arms"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_step_up": {
+    "filename": "dumbbell_step_up.gif",
+    "sizeKB": 52.7,
+    "exerciseName": "dumbbell step-up",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_romanian_deadlift": {
+    "filename": "dumbbell_romanian_deadlift.gif",
+    "sizeKB": 73.7,
+    "exerciseName": "dumbbell romanian deadlift",
+    "targetMuscles": [
+      "hamstrings"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_side_bend": {
+    "filename": "dumbbell_side_bend.gif",
+    "sizeKB": 83.9,
+    "exerciseName": "dumbbell side bend",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "mountain_climber": {
+    "filename": "mountain_climber.gif",
+    "sizeKB": 133.8,
+    "exerciseName": "mountain climber",
+    "targetMuscles": [
+      "abs"
+    ],
+    "bodyParts": [
+      "waist"
+    ],
+    "equipments": [
+      "body weight"
+    ],
+    "verified": true
+  },
+  "dumbbell_sumo_deadlift": {
+    "filename": "dumbbell_sumo_deadlift.gif",
+    "sizeKB": 70.5,
+    "exerciseName": "dumbbell sumo deadlift",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_kickback": {
+    "filename": "dumbbell_kickback.gif",
+    "sizeKB": 109.5,
+    "exerciseName": "dumbbell standing kickback",
+    "targetMuscles": [
+      "glutes"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_squat": {
+    "filename": "dumbbell_squat.gif",
+    "sizeKB": 66,
+    "exerciseName": "dumbbell squat",
+    "targetMuscles": [
+      "quads"
+    ],
+    "bodyParts": [
+      "upper legs"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  },
+  "dumbbell_burpee": {
+    "filename": "dumbbell_burpee.gif",
+    "sizeKB": 129.4,
+    "exerciseName": "dumbbell burpee",
+    "targetMuscles": [
+      "cardiovascular system"
+    ],
+    "bodyParts": [
+      "cardio"
+    ],
+    "equipments": [
+      "dumbbell"
+    ],
+    "verified": true
+  }
+}
