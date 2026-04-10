@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Share, TouchableOpacity, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { WorkoutSession } from '../types';
 import { useAppStore } from '../store/appStore';
 import { colors, spacing, radii, typography } from '../theme';
@@ -18,6 +20,7 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
   }
 
   const handleShare = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const exerciseLines = session.exercises.map((logged) => {
       const ex = findExercise(logged.exerciseKey);
       const totalReps = logged.sets.reduce((sum, s) => sum + s.reps, 0);
@@ -49,20 +52,23 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
       />
 
       <View style={styles.hero}>
-        <Text style={styles.heroEmoji}>🎉</Text>
-        <Text style={styles.title}>Workout Complete</Text>
+        <View style={styles.heroIconRing}>
+          <MaterialCommunityIcons name="trophy" size={36} color="#f59e0b" />
+        </View>
+        <Text style={styles.title}>Workout Complete!</Text>
         <Text style={styles.date}>
           {new Date(session.date).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
         </Text>
       </View>
 
       <View style={styles.statsGrid}>
-        <StatCard label="Total" value={`${session.totalCalories.toFixed(0)}`} icon="🔥" />
-        <StatCard label="Active" value={`${session.activeCalories.toFixed(0)}`} icon="⚡" />
-        <StatCard label="EPOC" value={`${session.epocCalories.toFixed(0)}`} icon="🌡️" />
+        <StatCard label="Total" value={`${session.totalCalories.toFixed(0)}`} iconName="fire" iconColor="#ef4444" unit="kcal" />
+        <StatCard label="Active" value={`${session.activeCalories.toFixed(0)}`} iconName="lightning-bolt" iconColor="#f59e0b" unit="kcal" />
+        <StatCard label="EPOC" value={`${session.epocCalories.toFixed(0)}`} iconName="thermometer" iconColor={colors.accent} unit="kcal" />
       </View>
 
       <Card variant="glass" style={styles.durationCard}>
+        <Ionicons name="time-outline" size={18} color={colors.primary} style={{ marginBottom: spacing.xs }} />
         <Text style={styles.durationLabel}>Session Duration</Text>
         <Text style={styles.durationValue}>{Math.floor(session.durationSec / 60)}m {session.durationSec % 60}s</Text>
       </Card>
@@ -107,10 +113,10 @@ export default function SummaryScreen({ route, navigation }: { route: any; navig
       </View>
 
       <View style={styles.actions}>
-        <Button variant="primary" size="lg" fullWidth onPress={() => navigation.navigate('MainTabs')}>
+        <Button variant="primary" size="lg" fullWidth onPress={() => navigation.navigate('MainTabs')} iconName="home-outline" iconLib="Ionicons">
           Back to Home
         </Button>
-        <Button variant="secondary" size="lg" fullWidth onPress={handleShare}>
+        <Button variant="secondary" size="lg" fullWidth onPress={handleShare} iconName="share-variant-outline" iconLib="MaterialCommunityIcons">
           Share Workout
         </Button>
       </View>
@@ -123,7 +129,7 @@ const styles = StyleSheet.create({
   content: { paddingBottom: spacing['4xl'] },
   heroGradient: { position: 'absolute', top: 0, left: 0, right: 0, height: 180 },
   hero: { alignItems: 'center', paddingTop: spacing['3xl'], paddingHorizontal: spacing['2xl'], paddingBottom: spacing['2xl'] },
-  heroEmoji: { fontSize: 48, marginBottom: spacing.lg },
+  heroIconRing: { width: 80, height: 80, borderRadius: radii.full, backgroundColor: 'rgba(245,158,11,0.15)', borderWidth: 2, borderColor: 'rgba(245,158,11,0.3)', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg },
   title: { ...typography.h1, color: colors.text, marginBottom: spacing.xs },
   date: { ...typography.body, color: colors.textMuted },
   statsGrid: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.lg, paddingHorizontal: spacing['2xl'] },

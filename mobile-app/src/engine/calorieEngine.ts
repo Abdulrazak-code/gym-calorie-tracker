@@ -32,10 +32,9 @@ export function caloriesBurned(
   const durationSec = estimateDuration(sets, reps);
   const durationHours = durationSec / 3600;
   const [intensity, repsMultiplier] = classifyIntensity(dumbbellWeightKg, reps);
-  // weightFactor makes heavier weights burn more calories proportionally
-  const weightFactor = bodyWeightKg > 0 && dumbbellWeightKg > 0
-    ? 1 + (dumbbellWeightKg / bodyWeightKg) * 0.3
-    : 1;
+  // Weight factor: heavier lifts increase calorie burn proportional to weight-to-bodyweight ratio.
+  // At dumbbell = 30% of body weight → +9% calories; at 100% body weight → +30%.
+  const weightFactor = dumbbellWeightKg > 0 ? 1 + (dumbbellWeightKg / bodyWeightKg) * 0.3 : 1;
   const multiplier = repsMultiplier * weightFactor;
   const adjustedMet = baseMet * multiplier;
   const activeCal = adjustedMet * bodyWeightKg * durationHours;

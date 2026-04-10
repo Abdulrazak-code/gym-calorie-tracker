@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, Alert, TouchableOpacity, Animated } from 'react-native';
 import { Image } from 'expo-image';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { useAppStore } from '../store/appStore';
 import { caloriesBurned } from '../engine/calorieEngine';
 import { colors, spacing, radii, typography } from '../theme';
@@ -135,14 +136,16 @@ function SetRow({
         onPress={handleComplete}
         activeOpacity={0.7}
       >
-        <Text style={[styles.completeBtnText, completed && styles.completeBtnTextActive]}>
-          {completed ? '✓' : '○'}
-        </Text>
+        <Ionicons
+          name={completed ? 'checkmark-circle' : 'ellipse-outline'}
+          size={22}
+          color={completed ? colors.primary : colors.border}
+        />
       </TouchableOpacity>
 
       {canDelete && (
         <TouchableOpacity style={styles.deleteSetBtn} onPress={onDelete} activeOpacity={0.7}>
-          <Text style={styles.deleteSetText}>×</Text>
+          <MaterialCommunityIcons name="minus-circle-outline" size={18} color={colors.danger} />
         </TouchableOpacity>
       )}
 
@@ -271,7 +274,7 @@ export default function WorkoutLoggerScreen({ navigation }: { navigation: any })
                   </View>
                 </View>
                 <TouchableOpacity onPress={() => removeExercise(exerciseIndex)} style={styles.removeBtn} activeOpacity={0.7}>
-                  <Text style={styles.removeBtnText}>✕</Text>
+                  <MaterialCommunityIcons name="close-circle-outline" size={20} color={colors.textMuted} />
                 </TouchableOpacity>
               </View>
 
