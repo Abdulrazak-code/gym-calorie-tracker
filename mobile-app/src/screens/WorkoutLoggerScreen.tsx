@@ -102,10 +102,8 @@ function SetRow({
           value={weight}
           onChangeText={(val) => {
             setWeight(val);
-            const parsed = parseFloat(val);
-            if (!isNaN(parsed) && parsed > 0) {
-              updateExerciseSet(exerciseIndex, setIndex, parsed, r);
-            }
+            const parsed = parseFloat(val) || 0;
+            updateExerciseSet(exerciseIndex, setIndex, parsed, r);
           }}
           keyboardType="decimal-pad"
           placeholder={lastSession ? `${lastSession.weight}` : '—'}
@@ -121,10 +119,8 @@ function SetRow({
           value={reps}
           onChangeText={(val) => {
             setReps(val);
-            const parsed = parseInt(val, 10);
-            if (!isNaN(parsed) && parsed > 0) {
-              updateExerciseSet(exerciseIndex, setIndex, w, parsed);
-            }
+            const parsed = parseInt(val, 10) || 0;
+            updateExerciseSet(exerciseIndex, setIndex, w, parsed);
           }}
           keyboardType="number-pad"
           placeholder={lastSession ? `${lastSession.reps}` : '—'}

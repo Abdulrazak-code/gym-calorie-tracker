@@ -31,7 +31,12 @@ export function caloriesBurned(
 ): CalorieResult {
   const durationSec = estimateDuration(sets, reps);
   const durationHours = durationSec / 3600;
-  const [intensity, multiplier] = classifyIntensity(dumbbellWeightKg, reps);
+  const [intensity, repsMultiplier] = classifyIntensity(dumbbellWeightKg, reps);
+  // weightFactor makes heavier weights burn more calories proportionally
+  const weightFactor = bodyWeightKg > 0 && dumbbellWeightKg > 0
+    ? 1 + (dumbbellWeightKg / bodyWeightKg) * 0.3
+    : 1;
+  const multiplier = repsMultiplier * weightFactor;
   const adjustedMet = baseMet * multiplier;
   const activeCal = adjustedMet * bodyWeightKg * durationHours;
   const totalCal = applyEPOC(activeCal);
